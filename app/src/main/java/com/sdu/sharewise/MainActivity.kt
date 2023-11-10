@@ -8,7 +8,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
-import com.sdu.sharewise.ui.auth.LoginView
+import com.sdu.sharewise.view.auth.LoginView
 import com.sdu.sharewise.ui.theme.ShareWiseTheme
 
 class MainActivity : ComponentActivity() {
