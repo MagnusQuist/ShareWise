@@ -1,14 +1,14 @@
 package com.sdu.sharewise.ui.theme
 
-import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Typography
 import androidx.compose.material3.darkColorScheme
-import androidx.compose.material3.dynamicDarkColorScheme
-import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.sp
 
 val LightColors = lightColorScheme(
     primary = md_theme_light_primary,
@@ -70,21 +70,53 @@ val DarkColors = darkColorScheme(
     surfaceTint = md_theme_dark_surfaceTint,
 )
 
+val Typography = Typography(
+    bodyMedium = TextStyle(
+        fontFamily = fonts,
+        fontWeight = FontWeight.Normal,
+        fontSize = 16.sp
+    ),
+    bodyLarge = TextStyle(
+        fontFamily = fonts,
+        fontWeight = FontWeight.Medium,
+        fontSize = 16.sp
+    ),
+    bodySmall = TextStyle(
+        fontFamily = fonts,
+        fontWeight = FontWeight.Light,
+        fontSize = 16.sp
+    ),
+    titleLarge = TextStyle(
+        fontFamily = fonts,
+        fontWeight = FontWeight.ExtraBold,
+        fontSize = 30.sp
+    ),
+    titleMedium = TextStyle(
+        fontFamily = fonts,
+        fontWeight = FontWeight.Bold,
+        fontSize = 30.sp
+    ),
+    titleSmall = TextStyle(
+        fontFamily = fonts,
+        fontWeight = FontWeight.SemiBold,
+        fontSize = 18.sp
+    ),
+)
+
 @Composable
 fun ShareWiseTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     content: @Composable () -> Unit
 ) {
-    val colorScheme =
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            val context = LocalContext.current
-            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
-        } else {
-            if (darkTheme) DarkColors else LightColors
-        }
+    val colors = if (darkTheme) {
+        DarkColors
+    } else {
+        LightColors
+    }
 
     MaterialTheme(
-        colorScheme = colorScheme,
-        content = content
+        colorScheme = colors,
+        content = content,
+        typography = Typography
     )
 }
