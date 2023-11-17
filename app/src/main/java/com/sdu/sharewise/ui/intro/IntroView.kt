@@ -62,7 +62,7 @@ fun IntroView(viewModel: AuthViewModel?, navController: NavHostController) {
                 .height(260.dp)
                 .align(Alignment.TopCenter)
                 .clip(MaterialTheme.shapes.large)
-                .background(MaterialTheme.colorScheme.background)
+                .background(Color.Transparent)
         )
 
         Column(
@@ -74,14 +74,12 @@ fun IntroView(viewModel: AuthViewModel?, navController: NavHostController) {
             Text(
                 text = "Share expenses easily with ShareWise",
                 style = MaterialTheme.typography.titleMedium,
-                color = contentColorFor(MaterialTheme.colorScheme.background),
+                color = MaterialTheme.colorScheme.primary,
                 modifier = Modifier
                     .fillMaxWidth()
                     .wrapContentHeight()
                     .align(Alignment.CenterHorizontally)
             )
-
-            Spacer(modifier = Modifier.height(10.dp))
 
             // Secondary Text (lorem ipsum)
             Text(
@@ -105,13 +103,13 @@ fun IntroView(viewModel: AuthViewModel?, navController: NavHostController) {
                 },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(64.dp)
-                    .clip(MaterialTheme.shapes.medium)
+                    .height(58.dp)
+                    .clip(MaterialTheme.shapes.small)
                     .background(MaterialTheme.colorScheme.primary)
             ) {
                 Text(
                     text = "Get Started",
-                    style = MaterialTheme.typography.titleSmall,
+                    style = MaterialTheme.typography.bodyLarge,
                     color = Color.White
                 )
             }

@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import com.sdu.sharewise.ui.theme.ShareWiseTheme
 import com.sdu.sharewise.navigation.ShareWiseNavHost
 import com.sdu.sharewise.ui.auth.AuthViewModel
@@ -22,7 +23,7 @@ class MainActivity : ComponentActivity() {
             ShareWiseTheme {
                 Surface (
                     modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
+                    color = Color.White
                 ) {
                     ShareWiseNavHost(viewModel)
                 }

@@ -11,6 +11,8 @@ import com.sdu.sharewise.ui.auth.LoginView
 import com.sdu.sharewise.ui.auth.RegisterView
 import com.sdu.sharewise.ui.home.HomeView
 import com.sdu.sharewise.ui.intro.IntroView
+import com.sdu.sharewise.ui.profile.ProfileView
+import com.sdu.sharewise.ui.profile.ProfileViewModel
 
 @Composable
 fun ShareWiseNavHost(
@@ -35,6 +37,9 @@ fun ShareWiseNavHost(
         }
         composable(Routes.Home.route) {
             HomeView(viewModel, navController)
+        }
+        composable(Routes.Profile.route) {
+            ProfileView(profileViewModel = ProfileViewModel(), navController)
         }
     }
 }

@@ -38,9 +38,9 @@ fun FormFieldText(
 ) {
     OutlinedTextField(
         modifier = modifier
-            .fillMaxWidth()
-            .border(2.dp, MaterialTheme.colorScheme.secondary,MaterialTheme.shapes.medium),
+            .fillMaxWidth(),
         value = text,
+        shape = MaterialTheme.shapes.small,
         onValueChange = onChange,
         leadingIcon = leadingIcon,
         textStyle = TextStyle(fontSize = 16.sp, color = MaterialTheme.colorScheme.primary),
@@ -48,10 +48,13 @@ fun FormFieldText(
         keyboardActions = keyBoardActions,
         enabled = isEnabled,
         colors = OutlinedTextFieldDefaults.colors(
-            focusedBorderColor = Transparent,
-            unfocusedBorderColor = Transparent,
-            disabledBorderColor = Transparent,
-            disabledTextColor = Transparent
+            focusedBorderColor = MaterialTheme.colorScheme.primary,
+            unfocusedBorderColor = MaterialTheme.colorScheme.secondary,
+            disabledBorderColor = MaterialTheme.colorScheme.secondary,
+            disabledTextColor = MaterialTheme.colorScheme.secondary,
+            focusedLeadingIconColor = MaterialTheme.colorScheme.primary,
+            unfocusedLeadingIconColor = MaterialTheme.colorScheme.secondary,
+            errorBorderColor = MaterialTheme.colorScheme.error,
         ),
         placeholder = {
             Text(text = placeholder, style = TextStyle(fontSize = 16.sp, color = MaterialTheme.colorScheme.secondary))
