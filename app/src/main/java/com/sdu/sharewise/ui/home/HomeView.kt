@@ -1,6 +1,5 @@
 package com.sdu.sharewise.ui.home
 
-import android.content.res.Configuration
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -14,11 +13,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -31,21 +28,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import com.sdu.sharewise.R
 import com.sdu.sharewise.navigation.Routes
-import com.sdu.sharewise.ui.auth.AuthViewModel
-import com.sdu.sharewise.ui.theme.ShareWiseTheme
+import com.sdu.sharewise.ui.profile.ProfileViewModel
 
 @Composable
-fun HomeView(viewModel: AuthViewModel?, navController: NavHostController) {
+fun HomeView(viewModel: ProfileViewModel, navController: NavHostController) {
     val context = LocalContext.current.applicationContext
 
     Column(
@@ -61,9 +54,13 @@ fun HomeView(viewModel: AuthViewModel?, navController: NavHostController) {
             // Profile Picture and Username
             Row(
                 modifier = Modifier
-                    .clickable { navController.navigate(Routes.Profile.route) },
+                    .clickable {
+                        navController.navigate(Routes.Profile.route) {
+                            popUpTo(Routes.Home.route)
+                        }
+                    },
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 Image(
                     painter = painterResource(id = R.drawable.ic_launcher_foreground),
@@ -75,12 +72,12 @@ fun HomeView(viewModel: AuthViewModel?, navController: NavHostController) {
                 )
                 Column() {
                     Text(
-                        text = viewModel?.currentUser?.displayName ?: "",
+                        text = viewModel.getCurrentUser?.displayName ?: "",
                         style = MaterialTheme.typography.bodyLarge,
                         color = MaterialTheme.colorScheme.primary
                     )
                     Text(
-                        text = viewModel?.currentUser?.email ?: "",
+                        text = viewModel.getCurrentUser?.email ?: "",
                         style = MaterialTheme.typography.bodySmall,
                         color = contentColorFor(MaterialTheme.colorScheme.background)
                     )
@@ -107,28 +104,6 @@ fun HomeView(viewModel: AuthViewModel?, navController: NavHostController) {
         Spacer(modifier = Modifier.height(32.dp))
 
         GroupCard()
-
-        Spacer(modifier = Modifier.height(32.dp))
-
-        Button(
-            onClick = {
-                viewModel?.logout()
-                navController.navigate(Routes.Login.route) {
-                    popUpTo(Routes.Login.route) { inclusive = true }
-                }
-            },
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(58.dp)
-                .clip(MaterialTheme.shapes.small)
-                .background(MaterialTheme.colorScheme.primary)
-        ) {
-            Text(
-                text = "Logout",
-                style = MaterialTheme.typography.bodyLarge,
-                color = Color.White
-            )
-        }
     }
 }
 
@@ -161,13 +136,5 @@ fun GroupCard(modifier: Modifier = Modifier) {
                 color = contentColorFor(MaterialTheme.colorScheme.background)
             )
         }
-    }
-}
-
-@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_NO)
-@Composable
-fun HomeScreenPreviewLight() {
-    ShareWiseTheme {
-        HomeView(viewModel = null, navController = rememberNavController())
     }
 }

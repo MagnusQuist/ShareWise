@@ -34,7 +34,7 @@ import com.sdu.sharewise.navigation.Routes
 import com.sdu.sharewise.ui.auth.AuthViewModel
 
 @Composable
-fun IntroView(viewModel: AuthViewModel?, navController: NavHostController) {
+fun IntroView(navController: NavHostController) {
     // Animate image by changing the Box padding
     val infiniteTransition = rememberInfiniteTransition(label = "")
     val topPadding by infiniteTransition.animateFloat(

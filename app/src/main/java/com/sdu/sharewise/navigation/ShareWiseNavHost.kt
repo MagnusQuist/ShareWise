@@ -1,11 +1,17 @@
 package com.sdu.sharewise.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.ViewModel
+import androidx.navigation.NavBackStackEntry
+import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navigation
 import com.sdu.sharewise.ui.auth.AuthViewModel
 import com.sdu.sharewise.ui.auth.LoginView
 import com.sdu.sharewise.ui.auth.RegisterView
@@ -13,10 +19,10 @@ import com.sdu.sharewise.ui.home.HomeView
 import com.sdu.sharewise.ui.intro.IntroView
 import com.sdu.sharewise.ui.profile.ProfileView
 import com.sdu.sharewise.ui.profile.ProfileViewModel
+import dagger.hilt.android.lifecycle.HiltViewModel
 
 @Composable
 fun ShareWiseNavHost(
-    viewModel: AuthViewModel,
     modifier: Modifier = Modifier,
     navController: NavHostController = rememberNavController(),
     startDestination: String = Routes.Intro.route
@@ -27,19 +33,43 @@ fun ShareWiseNavHost(
         startDestination = startDestination
     ) {
         composable(Routes.Intro.route) {
-            IntroView(viewModel, navController)
+            IntroView(navController)
         }
-        composable(Routes.Login.route) {
-            LoginView(viewModel, navController)
+        navigation(
+            startDestination = Routes.Login.route,
+            route = "auth"
+        ) {
+            composable(Routes.Login.route) {
+                val viewModel = it.sharedViewModel<AuthViewModel>(navController = navController)
+                LoginView(viewModel, navController)
+            }
+            composable(Routes.Register.route) {
+                val viewModel = it.sharedViewModel<AuthViewModel>(navController = navController)
+                RegisterView(viewModel, navController)
+            }
         }
-        composable(Routes.Register.route) {
-            RegisterView(viewModel, navController)
-        }
-        composable(Routes.Home.route) {
-            HomeView(viewModel, navController)
-        }
-        composable(Routes.Profile.route) {
-            ProfileView(profileViewModel = ProfileViewModel(), navController)
+
+        navigation(
+            startDestination = Routes.Home.route,
+            route = "home"
+        ) {
+            composable(Routes.Home.route) {
+                val viewModel = hiltViewModel<ProfileViewModel>()
+                HomeView(viewModel, navController)
+            }
+            composable(Routes.Profile.route) {
+                val viewModel = hiltViewModel<ProfileViewModel>()
+                ProfileView(viewModel, navController)
+            }
         }
     }
+}
+
+@Composable
+inline fun <reified T : ViewModel> NavBackStackEntry.sharedViewModel(navController: NavController): T {
+    val navGraphRoute = destination.parent?.route ?: return hiltViewModel()
+    val parentEntry = remember(this) {
+        navController.getBackStackEntry(navGraphRoute)
+    }
+    return hiltViewModel(parentEntry)
 }
