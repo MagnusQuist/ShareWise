@@ -52,6 +52,8 @@ fun LoginView(viewModel: AuthViewModel, navController: NavHostController) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
 
+    var isLoading by remember { mutableStateOf(false) }
+
     val loginFlow = viewModel.loginFlow.collectAsState()
 
     val focusManager = LocalFocusManager.current
@@ -135,11 +137,18 @@ fun LoginView(viewModel: AuthViewModel, navController: NavHostController) {
                     .clip(MaterialTheme.shapes.small)
                     .background(MaterialTheme.colorScheme.primary)
             ) {
-                Text(
-                    text = "Sign In",
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = Color.White
-                )
+                if (isLoading) {
+                    CircularProgressIndicator(
+                        color = Color.White,
+                        trackColor = MaterialTheme.colorScheme.secondary
+                    )
+                } else {
+                    Text(
+                        text = "Sign In",
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = Color.White
+                    )
+                }
             }
 
             Spacer(modifier = Modifier.height(18.dp))
@@ -159,7 +168,7 @@ fun LoginView(viewModel: AuthViewModel, navController: NavHostController) {
                         Toast.makeText(context, it.exception.message, Toast.LENGTH_LONG).show()
                     }
                     Resource.Loading -> {
-                        CircularProgressIndicator()
+                        isLoading = true
                     }
                     is Resource.Success -> {
                         LaunchedEffect(Unit) {
