@@ -6,8 +6,10 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -16,9 +18,10 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material3.Button
+import androidx.compose.material.icons.filled.PersonOutline
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CardElevation
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -31,6 +34,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.sdu.sharewise.R
@@ -85,8 +89,8 @@ fun HomeView(viewModel: ProfileViewModel, navController: NavHostController) {
             }
             IconButton(
                 modifier = Modifier
-                    .size(46.dp)
-                    .background(MaterialTheme.colorScheme.tertiary, CircleShape),
+                    .size(46.dp),
+                    //.background(MaterialTheme.colorScheme.tertiary, CircleShape),
                 onClick = {
                     Toast.makeText(context, "Add new group", Toast.LENGTH_SHORT).show()
                 }
@@ -95,7 +99,7 @@ fun HomeView(viewModel: ProfileViewModel, navController: NavHostController) {
                     modifier = Modifier
                         .size(28.dp),
                     imageVector = Icons.Default.Add,
-                    tint = MaterialTheme.colorScheme.primary,
+                    tint = MaterialTheme.colorScheme.secondary,
                     contentDescription = "Add Group"
                 )
             }
@@ -103,38 +107,98 @@ fun HomeView(viewModel: ProfileViewModel, navController: NavHostController) {
 
         Spacer(modifier = Modifier.height(32.dp))
 
-        GroupCard()
+        otherGroupCard()
+        Spacer(modifier = Modifier.height(26.dp))
+        otherGroupCard()
+        Spacer(modifier = Modifier.height(26.dp))
+        otherGroupCard()
+        Spacer(modifier = Modifier.height(26.dp))
+        otherGroupCard()
     }
 }
 
 @Composable
-fun GroupCard(modifier: Modifier = Modifier) {
+fun otherGroupCard(
+    modifier: Modifier = Modifier
+) {
     Card(modifier = modifier
         .fillMaxWidth(),
         shape = MaterialTheme.shapes.small,
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.tertiary
+            containerColor = MaterialTheme.colorScheme.onTertiary
+        ),
+        elevation = CardDefaults.cardElevation(
+            defaultElevation = 3.dp
         )
     ) {
-        Column (
-            modifier = Modifier
-                .padding(14.dp)
+        Row(modifier = Modifier
+            .height(IntrinsicSize.Min)
         ) {
-            Text(
-                text = "Group name",
-                style = MaterialTheme.typography.bodyMedium,
-                color = contentColorFor(MaterialTheme.colorScheme.background)
-            )
-            Text(
-                text = "0 kr.",
-                style = MaterialTheme.typography.bodyLarge,
-                color = contentColorFor(MaterialTheme.colorScheme.background)
-            )
-            Text(
-                text = "You'll receive",
-                style = MaterialTheme.typography.bodySmall,
-                color = contentColorFor(MaterialTheme.colorScheme.background)
-            )
+            Row(modifier = Modifier
+                .background(MaterialTheme.colorScheme.onTertiaryContainer)
+                .padding(14.dp)
+                .fillMaxHeight(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    modifier = Modifier
+                        .size(20.dp),
+                    imageVector = Icons.Default.PersonOutline,
+                    tint = MaterialTheme.colorScheme.tertiary,
+                    contentDescription = "People in group"
+                )
+                Text(
+                    text = "2",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSecondary
+                )
+            }
+
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(14.dp)
+            ) {
+                Text(
+                    text = "Trip to Europe",
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = contentColorFor(MaterialTheme.colorScheme.background)
+                )
+                Row(modifier = Modifier
+                    .padding(top = 10.dp)
+                ) {
+                    Column(modifier = Modifier
+                        .weight(1f)
+                    ) {
+                        Text(
+                            text = "Total Expense",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.secondary
+                        )
+                        Text(
+                            text = "13564.54 kr.",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = contentColorFor(MaterialTheme.colorScheme.background)
+                        )
+                    }
+                    Column(modifier = Modifier
+                        .weight(1f)
+                    ) {
+                        Text(
+                            textAlign = TextAlign.End,
+                            text = "I'm Owed",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.secondary
+                        )
+                        Text(
+                            textAlign = TextAlign.End,
+                            text = "1430.50 kr.",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.outline
+                        )
+                    }
+                }
+            }
         }
     }
 }

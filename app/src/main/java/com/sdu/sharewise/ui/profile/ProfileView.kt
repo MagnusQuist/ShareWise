@@ -13,28 +13,21 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Shield
-import androidx.compose.material.icons.outlined.Notifications
-import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.sdu.sharewise.navigation.Routes
+import com.sdu.sharewise.ui.components.ProfileItemComp
 import com.sdu.sharewise.ui.components.SettingsClickableComp
-import com.sdu.sharewise.ui.components.SettingsSwitchComp
+import com.sdu.sharewise.ui.components.SettingsGroup
 
 @Composable
 fun ProfileView(
@@ -75,41 +68,65 @@ fun ProfileView(
 
         Spacer(modifier = Modifier.height(32.dp))
 
-        SettingsClickableComp(
-            icon = Icons.Default.Shield,
-            iconDesc = "Name",
-            name = "Change Name"
+        SettingsGroup(
+            name = "Profile",
+            topBorder = false,
+            bottomBorder = false,
         ) {
-            // Navigate to another page
-        }
-        SettingsSwitchComp(
-            name = "Notifications",
-            icon = Icons.Outlined.Notifications,
-            iconDesc = "Enable push notifications",
-            // value is collected from StateFlow - updates the UI on change
-            state = viewModel.isSwitchOn.collectAsState()
-        ) {
-            // call ViewModel to toggle the value
-            viewModel.toggleSwitch()
+            ProfileItemComp(
+                name = "Name",
+                value = viewModel.getCurrentUser?.displayName?: "",
+                color = MaterialTheme.colorScheme.primary
+            )
+            ProfileItemComp(
+                name = "E-mail",
+                value = viewModel.getCurrentUser?.email?: "",
+                color = MaterialTheme.colorScheme.primary
+            )
+            ProfileItemComp(
+                name = "Mobile no.",
+                value = "",
+                color = MaterialTheme.colorScheme.primary
+            )
         }
 
-        Button(
-            onClick = {
+        SettingsGroup(
+            name = "Settings",
+            topBorder = false,
+            bottomBorder = false,
+        ) {
+            SettingsClickableComp(
+                name = "Notifications",
+                color = MaterialTheme.colorScheme.primary
+            ) {
+                // Navigate to another page
+            }
+            SettingsClickableComp(
+                name = "Transactions",
+                color = MaterialTheme.colorScheme.primary
+            ) {
+                // Navigate to another page
+            }
+            SettingsClickableComp(
+                name = "Sign Out",
+                color = MaterialTheme.colorScheme.error
+            ) {
                 viewModel.logout()
                 navController.navigate(Routes.Login.route) {
                     popUpTo(Routes.Login.route) { inclusive = true }
                 }
-            },
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(58.dp)
-                .clip(MaterialTheme.shapes.small)
-                .background(MaterialTheme.colorScheme.primary)
+            }
+        }
+
+        SettingsGroup(
+            name = "",
+            topBorder = true,
+            bottomBorder = false,
         ) {
-            Text(
-                text = "Logout",
-                style = MaterialTheme.typography.bodyLarge,
-                color = Color.White
+            ProfileItemComp(
+                name = "User ID",
+                value = viewModel.getCurrentUser?.uid?: "",
+                color = MaterialTheme.colorScheme.primary
             )
         }
     }
