@@ -15,9 +15,11 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Email
 import androidx.compose.material.icons.outlined.Lock
+import androidx.compose.material.icons.outlined.RemoveRedEye
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -38,17 +40,19 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.sdu.sharewise.data.Resource
 import com.sdu.sharewise.navigation.Routes
+import com.sdu.sharewise.ui.components.FormFieldPassword
 import com.sdu.sharewise.ui.components.FormFieldText
 
 @Composable
-fun LoginView(viewModel: AuthViewModel?, navController: NavHostController) {
+fun LoginView(viewModel: AuthViewModel, navController: NavHostController) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
 
-    val loginFlow = viewModel?.loginFlow?.collectAsState()
+    val loginFlow = viewModel.loginFlow.collectAsState()
 
     val focusManager = LocalFocusManager.current
 
@@ -85,7 +89,6 @@ fun LoginView(viewModel: AuthViewModel?, navController: NavHostController) {
                     Icon(
                         Icons.Outlined.Email,
                         "Email Icon",
-                        tint = MaterialTheme.colorScheme.secondary
                     )
                 },
                 imeAction = ImeAction.Next,
@@ -99,7 +102,7 @@ fun LoginView(viewModel: AuthViewModel?, navController: NavHostController) {
 
             Spacer(modifier = Modifier.height(18.dp))
 
-            FormFieldText(
+            FormFieldPassword(
                 text = password,
                 placeholder = "Password",
                 onChange = {
@@ -108,8 +111,7 @@ fun LoginView(viewModel: AuthViewModel?, navController: NavHostController) {
                 leadingIcon = {
                     Icon(
                         Icons.Outlined.Lock,
-                        "Email Icon",
-                        tint = MaterialTheme.colorScheme.secondary
+                        "Password Icon",
                     )
                 },
                 imeAction = ImeAction.Next,
@@ -125,17 +127,17 @@ fun LoginView(viewModel: AuthViewModel?, navController: NavHostController) {
 
             Button(
                 onClick = {
-                          viewModel?.login(email, password)
+                          viewModel.login(email, password)
                 },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(64.dp)
-                    .clip(MaterialTheme.shapes.medium)
+                    .height(58.dp)
+                    .clip(MaterialTheme.shapes.small)
                     .background(MaterialTheme.colorScheme.primary)
             ) {
                 Text(
                     text = "Sign In",
-                    style = MaterialTheme.typography.titleSmall,
+                    style = MaterialTheme.typography.bodyLarge,
                     color = Color.White
                 )
             }
@@ -150,7 +152,7 @@ fun LoginView(viewModel: AuthViewModel?, navController: NavHostController) {
                 style = MaterialTheme.typography.bodyMedium
             )
 
-            loginFlow?.value?.let {
+            loginFlow.value?.let {
                 when (it) {
                     is Resource.Failure -> {
                         val context = LocalContext.current
@@ -162,7 +164,7 @@ fun LoginView(viewModel: AuthViewModel?, navController: NavHostController) {
                     is Resource.Success -> {
                         LaunchedEffect(Unit) {
                             navController.navigate(Routes.Home.route) {
-                                popUpTo(Routes.Home.route) { inclusive = true }
+                                popUpTo("auth") { inclusive = true }
                             }
                         }
                     }

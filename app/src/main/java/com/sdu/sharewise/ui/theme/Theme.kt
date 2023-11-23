@@ -71,10 +71,15 @@ val DarkColors = darkColorScheme(
 )
 
 val Typography = Typography(
-    bodyMedium = TextStyle(
+    labelMedium = TextStyle(
         fontFamily = fonts,
         fontWeight = FontWeight.Normal,
-        fontSize = 16.sp
+        fontSize = 14.sp
+    ),
+    bodyMedium = TextStyle(
+        fontFamily = fonts,
+        fontWeight = FontWeight.Medium,
+        fontSize = 14.sp
     ),
     bodyLarge = TextStyle(
         fontFamily = fonts,
@@ -84,7 +89,7 @@ val Typography = Typography(
     bodySmall = TextStyle(
         fontFamily = fonts,
         fontWeight = FontWeight.Light,
-        fontSize = 16.sp
+        fontSize = 12.sp
     ),
     titleLarge = TextStyle(
         fontFamily = fonts,

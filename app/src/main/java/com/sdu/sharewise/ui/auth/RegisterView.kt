@@ -67,7 +67,7 @@ fun RegisterView(viewModel: AuthViewModel?, navController: NavHostController) {
         ) {
             // Form Title
             Text(
-                text = "Sign in to ShareWise and start sharing",
+                text = "Create your ShareWise account here",
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.primary,
                 modifier = Modifier
@@ -87,7 +87,6 @@ fun RegisterView(viewModel: AuthViewModel?, navController: NavHostController) {
                     Icon(
                         Icons.Outlined.PersonOutline,
                         "Person Icon",
-                        tint = MaterialTheme.colorScheme.secondary
                     )
                 },
                 imeAction = ImeAction.Next,
@@ -111,7 +110,6 @@ fun RegisterView(viewModel: AuthViewModel?, navController: NavHostController) {
                     Icon(
                         Icons.Outlined.Email,
                         "Email Icon",
-                        tint = MaterialTheme.colorScheme.secondary
                     )
                 },
                 imeAction = ImeAction.Next,
@@ -134,8 +132,7 @@ fun RegisterView(viewModel: AuthViewModel?, navController: NavHostController) {
                 leadingIcon = {
                     Icon(
                         Icons.Outlined.Lock,
-                        "Email Icon",
-                        tint = MaterialTheme.colorScheme.secondary
+                        "Password Icon",
                     )
                 },
                 imeAction = ImeAction.Next,
@@ -155,13 +152,13 @@ fun RegisterView(viewModel: AuthViewModel?, navController: NavHostController) {
                 },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(64.dp)
-                    .clip(MaterialTheme.shapes.medium)
+                    .height(58.dp)
+                    .clip(MaterialTheme.shapes.small)
                     .background(MaterialTheme.colorScheme.primary)
             ) {
                 Text(
-                    text = "Sign In",
-                    style = MaterialTheme.typography.titleSmall,
+                    text = "Sign Up",
+                    style = MaterialTheme.typography.bodyLarge,
                     color = Color.White
                 )
             }
