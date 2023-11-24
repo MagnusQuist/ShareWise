@@ -48,7 +48,7 @@ fun ProfileView(
             IconButton(
                 modifier = Modifier
                     .size(46.dp)
-                    .background(MaterialTheme.colorScheme.tertiary, CircleShape),
+                    .background(MaterialTheme.colorScheme.primaryContainer, CircleShape),
                 onClick = {
                     if (navController.previousBackStackEntry != null) {
                         navController.navigateUp()
