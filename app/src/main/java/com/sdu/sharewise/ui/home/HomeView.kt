@@ -83,7 +83,7 @@ fun HomeView(viewModel: ProfileViewModel, navController: NavHostController) {
                     Text(
                         text = viewModel.getCurrentUser?.email ?: "",
                         style = MaterialTheme.typography.bodySmall,
-                        color = contentColorFor(MaterialTheme.colorScheme.background)
+                        color = MaterialTheme.colorScheme.secondary
                     )
                 }
             }
@@ -125,7 +125,7 @@ fun otherGroupCard(
         .fillMaxWidth(),
         shape = MaterialTheme.shapes.small,
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.onTertiary
+            containerColor = MaterialTheme.colorScheme.primaryContainer
         ),
         elevation = CardDefaults.cardElevation(
             defaultElevation = 3.dp
@@ -135,7 +135,7 @@ fun otherGroupCard(
             .height(IntrinsicSize.Min)
         ) {
             Row(modifier = Modifier
-                .background(MaterialTheme.colorScheme.onTertiaryContainer)
+                .background(MaterialTheme.colorScheme.onPrimaryContainer)
                 .padding(14.dp)
                 .fillMaxHeight(),
                 verticalAlignment = Alignment.CenterVertically
@@ -144,7 +144,7 @@ fun otherGroupCard(
                     modifier = Modifier
                         .size(20.dp),
                     imageVector = Icons.Default.PersonOutline,
-                    tint = MaterialTheme.colorScheme.tertiary,
+                    tint = MaterialTheme.colorScheme.onSecondary,
                     contentDescription = "People in group"
                 )
                 Text(
@@ -162,7 +162,7 @@ fun otherGroupCard(
                 Text(
                     text = "Trip to Europe",
                     style = MaterialTheme.typography.bodyLarge,
-                    color = contentColorFor(MaterialTheme.colorScheme.background)
+                    color = MaterialTheme.colorScheme.primary
                 )
                 Row(modifier = Modifier
                     .padding(top = 10.dp)
@@ -188,7 +188,7 @@ fun otherGroupCard(
                             textAlign = TextAlign.End,
                             text = "I'm Owed",
                             style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.secondary
+                            color = MaterialTheme.colorScheme.primary
                         )
                         Text(
                             textAlign = TextAlign.End,

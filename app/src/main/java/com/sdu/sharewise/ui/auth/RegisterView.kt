@@ -159,7 +159,7 @@ fun RegisterView(viewModel: AuthViewModel?, navController: NavHostController) {
                 Text(
                     text = "Sign Up",
                     style = MaterialTheme.typography.bodyLarge,
-                    color = Color.White
+                    color = MaterialTheme.colorScheme.onPrimary
                 )
             }
 
@@ -170,7 +170,7 @@ fun RegisterView(viewModel: AuthViewModel?, navController: NavHostController) {
                 onClick = {
                     navController.navigate(Routes.Login.route)
                 },
-                style = MaterialTheme.typography.bodyMedium
+                style = MaterialTheme.typography.bodyMedium,
             )
 
             registerFlow?.value?.let {

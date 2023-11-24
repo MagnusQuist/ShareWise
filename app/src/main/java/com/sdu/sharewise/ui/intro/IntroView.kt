@@ -85,7 +85,7 @@ fun IntroView(navController: NavHostController) {
             Text(
                 text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
                 style = MaterialTheme.typography.bodyMedium,
-                color = contentColorFor(MaterialTheme.colorScheme.background),
+                color = MaterialTheme.colorScheme.primary,
                 modifier = Modifier
                     .fillMaxWidth()
                     .wrapContentHeight()
@@ -110,7 +110,7 @@ fun IntroView(navController: NavHostController) {
                 Text(
                     text = "Get Started",
                     style = MaterialTheme.typography.bodyLarge,
-                    color = Color.White
+                    color = MaterialTheme.colorScheme.onPrimary
                 )
             }
         }
