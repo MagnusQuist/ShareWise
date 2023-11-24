@@ -15,11 +15,11 @@ import androidx.navigation.navigation
 import com.sdu.sharewise.ui.auth.AuthViewModel
 import com.sdu.sharewise.ui.auth.LoginView
 import com.sdu.sharewise.ui.auth.RegisterView
+import com.sdu.sharewise.ui.group.CreateGroupView
 import com.sdu.sharewise.ui.home.HomeView
 import com.sdu.sharewise.ui.intro.IntroView
 import com.sdu.sharewise.ui.profile.ProfileView
 import com.sdu.sharewise.ui.profile.ProfileViewModel
-import dagger.hilt.android.lifecycle.HiltViewModel
 
 @Composable
 fun ShareWiseNavHost(
@@ -56,6 +56,10 @@ fun ShareWiseNavHost(
             composable(Routes.Home.route) {
                 val viewModel = hiltViewModel<ProfileViewModel>()
                 HomeView(viewModel, navController)
+            }
+            composable(Routes.CreateGroup.route) {
+                val viewModel = hiltViewModel<ProfileViewModel>()
+                CreateGroupView(viewModel, navController)
             }
             composable(Routes.Profile.route) {
                 val viewModel = hiltViewModel<ProfileViewModel>()

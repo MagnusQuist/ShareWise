@@ -1,8 +1,9 @@
-package com.sdu.sharewise.data
+package com.sdu.sharewise.data.repository
 
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.UserProfileChangeRequest
+import com.sdu.sharewise.data.Resource
 import com.sdu.sharewise.data.utils.await
 import javax.inject.Inject
 
