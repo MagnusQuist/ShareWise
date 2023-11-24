@@ -51,8 +51,10 @@ android {
 
 dependencies {
     // Firebase
-    implementation("com.google.firebase:firebase-auth:22.3.0")
-    implementation("com.google.firebase:firebase-auth-ktx:22.2.0")
+    implementation(platform("com.google.firebase:firebase-bom:32.6.0"))
+    implementation("com.google.firebase:firebase-auth")
+    implementation("com.google.firebase:firebase-auth-ktx")
+    implementation("com.google.firebase:firebase-database")
 
     // Compose
     val composeBom = platform("androidx.compose:compose-bom:2023.10.01")

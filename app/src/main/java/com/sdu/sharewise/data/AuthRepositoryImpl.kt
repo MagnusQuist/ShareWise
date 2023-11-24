@@ -7,7 +7,8 @@ import com.sdu.sharewise.data.utils.await
 import javax.inject.Inject
 
 class AuthRepositoryImpl @Inject constructor(
-    private val firebaseAuth: FirebaseAuth
+    private val firebaseAuth: FirebaseAuth,
+    private val userRepository: UserRepository
 ) : AuthRepository {
     override val currentUser: FirebaseUser?
         get() = firebaseAuth.currentUser
@@ -30,6 +31,7 @@ class AuthRepositoryImpl @Inject constructor(
         return try {
             val result = firebaseAuth.createUserWithEmailAndPassword(email, password).await()
             result?.user?.updateProfile(UserProfileChangeRequest.Builder().setDisplayName(name).build())?.await()
+            currentUser?.let { userRepository.createUser(it.uid, name, email, phone = "") }
             Resource.Success(result.user!!)
         } catch (e: Exception) {
             e.printStackTrace()

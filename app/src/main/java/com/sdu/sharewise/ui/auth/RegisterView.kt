@@ -42,6 +42,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.sdu.sharewise.data.Resource
 import com.sdu.sharewise.navigation.Routes
+import com.sdu.sharewise.ui.components.FormFieldPassword
 import com.sdu.sharewise.ui.components.FormFieldText
 
 @Composable
@@ -49,6 +50,7 @@ fun RegisterView(viewModel: AuthViewModel?, navController: NavHostController) {
     var name by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    var isLoading by remember { mutableStateOf(false) }
 
     val registerFlow = viewModel?.registerFlow?.collectAsState()
 
@@ -123,7 +125,7 @@ fun RegisterView(viewModel: AuthViewModel?, navController: NavHostController) {
 
             Spacer(modifier = Modifier.height(18.dp))
 
-            FormFieldText(
+            FormFieldPassword(
                 text = password,
                 placeholder = "Password",
                 onChange = {
@@ -156,11 +158,18 @@ fun RegisterView(viewModel: AuthViewModel?, navController: NavHostController) {
                     .clip(MaterialTheme.shapes.small)
                     .background(MaterialTheme.colorScheme.primary)
             ) {
-                Text(
-                    text = "Sign Up",
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = Color.White
-                )
+                if (isLoading) {
+                    CircularProgressIndicator(
+                        color = Color.White,
+                        trackColor = MaterialTheme.colorScheme.secondary
+                    )
+                } else {
+                    Text(
+                        text = "Sign Up",
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = Color.White
+                    )
+                }
             }
 
             Spacer(modifier = Modifier.height(18.dp))
@@ -180,7 +189,7 @@ fun RegisterView(viewModel: AuthViewModel?, navController: NavHostController) {
                         Toast.makeText(context, it.exception.message, Toast.LENGTH_LONG).show()
                     }
                     Resource.Loading -> {
-                        CircularProgressIndicator()
+                        isLoading = true
                     }
                     is Resource.Success -> {
                         LaunchedEffect(Unit) {
