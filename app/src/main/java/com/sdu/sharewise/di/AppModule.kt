@@ -4,6 +4,8 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 import com.sdu.sharewise.data.repository.AuthRepository
 import com.sdu.sharewise.data.repository.AuthRepositoryImpl
+import com.sdu.sharewise.data.repository.GroupRepository
+import com.sdu.sharewise.data.repository.GroupRepositoryImpl
 import com.sdu.sharewise.data.repository.UserRepository
 import com.sdu.sharewise.data.repository.UserRepositoryImpl
 import dagger.Module
@@ -25,4 +27,7 @@ class AppModule {
 
     @Provides
     fun provideUserRepository(impl: UserRepositoryImpl): UserRepository = impl
+
+    @Provides
+    fun provideGroupRepository(impl: GroupRepositoryImpl): GroupRepository = impl
 }

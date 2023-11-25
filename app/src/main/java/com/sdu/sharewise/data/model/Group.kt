@@ -5,7 +5,6 @@ data class Group(
     val name: String,
     val desc: String,
     val color: String,
-    val owner: User,
-    val users: MutableList<User> = mutableListOf(),
-    val expenses: MutableList<Expense> = mutableListOf(),
+    val ownerUid: String,
+    val members: MutableList<String?> = mutableListOf(),
 )

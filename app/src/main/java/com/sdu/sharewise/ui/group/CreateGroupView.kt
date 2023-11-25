@@ -39,6 +39,8 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.contentColorFor
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -57,6 +59,8 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.sdu.sharewise.data.Resource
+import com.sdu.sharewise.navigation.Routes
 import com.sdu.sharewise.ui.components.FormFieldText
 
 @Composable
@@ -67,6 +71,8 @@ fun CreateGroupView(viewModel: CreateGroupViewModel, navController: NavHostContr
 
     var currentMember by remember { mutableStateOf("") }
     var members by remember { mutableStateOf(mutableStateListOf<String?>(null)) }
+
+    val createGroupFlow = viewModel.createGroupFlow.collectAsState()
 
     var isLoading by remember { mutableStateOf(false) }
 
@@ -226,7 +232,8 @@ fun CreateGroupView(viewModel: CreateGroupViewModel, navController: NavHostContr
         // Create Button
         Button(
             onClick = {
-                Toast.makeText(context, "We do be working on this :D", Toast.LENGTH_SHORT).show()
+                viewModel.createGroup(name, desc, members)
+                Toast.makeText(context, "Creating Group", Toast.LENGTH_SHORT).show()
             },
             modifier = Modifier
                 .fillMaxWidth()
@@ -245,6 +252,26 @@ fun CreateGroupView(viewModel: CreateGroupViewModel, navController: NavHostContr
                     style = MaterialTheme.typography.bodyLarge,
                     color = Color.White
                 )
+            }
+        }
+
+        createGroupFlow.value?.let {
+            when (it) {
+                is Resource.Failure -> {
+                    val context = LocalContext.current
+                    Toast.makeText(context, it.exception.message, Toast.LENGTH_LONG).show()
+                }
+                Resource.Loading -> {
+                    isLoading = true
+                }
+                is Resource.Success -> {
+                    LaunchedEffect(Unit) {
+                        Toast.makeText(context, "Group Created", Toast.LENGTH_SHORT).show()
+                        navController.navigate(Routes.Home.route) {
+                            popUpTo("Home") { inclusive = true }
+                        }
+                    }
+                }
             }
         }
     }

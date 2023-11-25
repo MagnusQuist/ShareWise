@@ -3,11 +3,14 @@ package com.sdu.sharewise.data.repository
 import com.google.firebase.database.FirebaseDatabase
 import com.sdu.sharewise.data.Resource
 import com.sdu.sharewise.data.model.Group
-import com.sdu.sharewise.data.model.User
+import com.sdu.sharewise.data.utils.await
+import javax.inject.Inject
 
-class GroupRepositoryImpl : GroupRepository {
+class GroupRepositoryImpl @Inject constructor (
+    private val firebaseDB: FirebaseDatabase
+) : GroupRepository {
     override val database: FirebaseDatabase?
-        get() = TODO("Not yet implemented")
+        get() = firebaseDB
 
     override suspend fun createGroup(
         groupUid: String,
@@ -17,7 +20,19 @@ class GroupRepositoryImpl : GroupRepository {
         ownerUid: String,
         members: MutableList<String?>
     ): Resource<Group> {
-        TODO("Not yet implemented")
+        return try {
+            val memberUuids = getUuidByEmail(members)
+            val group = Group(groupUid = groupUid, name = name, desc = desc, color = color, ownerUid = ownerUid, members = memberUuids)
+            firebaseDB.getReference("Groups").child(groupUid).setValue(group).await()
+            Resource.Success(group)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Resource.Failure(e)
+        }
+    }
+
+    private fun getUuidByEmail(members: MutableList<String?>): MutableList<String?> {
+        TODO("Check if user exist and get uuid")
     }
 
     override suspend fun addUser(groupUid: String, uuid: String): Resource<Group> {
