@@ -3,7 +3,6 @@ package com.sdu.sharewise.data.repository
 import com.google.firebase.database.FirebaseDatabase
 import com.sdu.sharewise.data.Resource
 import com.sdu.sharewise.data.model.Group
-import com.sdu.sharewise.data.model.User
 
 interface GroupRepository {
     val database: FirebaseDatabase?
@@ -12,12 +11,12 @@ interface GroupRepository {
         name: String,
         desc: String,
         color: String,
-        owner: User,
-        users: MutableList<User> = mutableListOf(),
+        ownerUid: String,
+        members: MutableList<String?> = mutableListOf(),
     ): Resource<Group>
     suspend fun addUser(
         groupUid: String,
-        userToAdd: User,
+        uuid: String,
     ): Resource<Group>
     suspend fun removeUser(
         groupUid: String,
@@ -26,7 +25,7 @@ interface GroupRepository {
     suspend fun addExpense(
         expenseUid: String,
         groupUid: String,
-        user: User,
+        uuid: String,
         expense: Float,
     )
     suspend fun payExpense()

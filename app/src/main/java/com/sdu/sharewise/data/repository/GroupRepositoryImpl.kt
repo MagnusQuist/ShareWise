@@ -14,13 +14,13 @@ class GroupRepositoryImpl : GroupRepository {
         name: String,
         desc: String,
         color: String,
-        owner: User,
-        users: MutableList<User>
+        ownerUid: String,
+        members: MutableList<String?>
     ): Resource<Group> {
         TODO("Not yet implemented")
     }
 
-    override suspend fun addUser(groupUid: String, userToAdd: User): Resource<Group> {
+    override suspend fun addUser(groupUid: String, uuid: String): Resource<Group> {
         TODO("Not yet implemented")
     }
 
@@ -31,7 +31,7 @@ class GroupRepositoryImpl : GroupRepository {
     override suspend fun addExpense(
         expenseUid: String,
         groupUid: String,
-        user: User,
+        uuid: String,
         expense: Float
     ) {
         TODO("Not yet implemented")
