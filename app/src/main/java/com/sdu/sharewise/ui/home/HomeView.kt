@@ -23,17 +23,16 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.PersonOutline
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -44,17 +43,23 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.core.graphics.toColorInt
 import androidx.navigation.NavHostController
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.ValueEventListener
 import com.sdu.sharewise.R
 import com.sdu.sharewise.data.model.Group
 import com.sdu.sharewise.navigation.Routes
 
 @Composable
 fun HomeView(viewModel: HomeViewModel, navController: NavHostController) {
-    var ownGroups by remember { mutableStateOf(mutableStateListOf<Group?>(null)) }
-    var othersGroups by remember { mutableStateOf(mutableStateListOf<Group?>(null)) }
+    // Observe groups from ViewModel
+    val ownGroups by viewModel.ownGroups.observeAsState(emptyList())
+    val othersGroups by viewModel.othersGroups.observeAsState(emptyList())
+
+    // Observe error message from ViewModel
+    val errorMessage by viewModel.errorMessage.observeAsState(null)
+
+    // Fetch groups when the composable is first created
+    LaunchedEffect(Unit) {
+        viewModel.fetchGroups()
+    }
 
     val context = LocalContext.current.applicationContext
 
@@ -134,9 +139,15 @@ fun HomeView(viewModel: HomeViewModel, navController: NavHostController) {
                 )
             }
 
-            itemsIndexed (ownGroups) { index, _ ->
-                ownGroups[index]?.let { otherGroupCard(group = it) }
-                Spacer(modifier = Modifier.height(26.dp))
+            if (ownGroups.isEmpty()) {
+                item {
+                    LoadingGroups(modifier = Modifier,"Loading...")
+                }
+            } else {
+                itemsIndexed (ownGroups) { index, _ ->
+                    ownGroups[index]?.let { otherGroupCard(group = it) }
+                    Spacer(modifier = Modifier.height(26.dp))
+                }
             }
 
             item {
@@ -147,35 +158,47 @@ fun HomeView(viewModel: HomeViewModel, navController: NavHostController) {
                 )
             }
 
-            itemsIndexed (othersGroups) { index, _ ->
-                othersGroups[index]?.let { otherGroupCard(group = it) }
-                Spacer(modifier = Modifier.height(26.dp))
+            if (othersGroups.isEmpty()) {
+                item {
+                    LoadingGroups(modifier = Modifier,"Loading...")
+                }
+            } else {
+                itemsIndexed (othersGroups) { index, _ ->
+                    othersGroups[index]?.let { otherGroupCard(group = it) }
+                    Spacer(modifier = Modifier.height(26.dp))
+                }
+            }
+
+            errorMessage?.let { message ->
+                Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
             }
         }
     }
+}
 
-    viewModel.getDatabase.getReference("Groups").addValueEventListener(object : ValueEventListener {
-        override fun onDataChange(snapshot: DataSnapshot) {
-            ownGroups.clear()
-            othersGroups.clear()
-
-            for (childSnapshot in snapshot.children) {
-                val group = childSnapshot.getValue(Group::class.java)
-
-                if (group != null) {
-                    if (group.ownerUid == viewModel.getCurrentUser?.uid) {
-                        ownGroups.add(group)
-                    } else if (group.members.contains(viewModel.getCurrentUser?.email)) {
-                        othersGroups.add(group)
-                    }
-                }
-            }
-        }
-
-        override fun onCancelled(error: DatabaseError) {
-            Toast.makeText(context, "Fail to get groups.", Toast.LENGTH_SHORT).show()
-        }
-    })
+@Composable
+fun LoadingGroups(
+    modifier: Modifier = Modifier,
+    text: String
+) {
+    Column (
+        modifier = modifier
+            .fillMaxWidth()
+            .height(60.dp)
+            .padding(24.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        CircularProgressIndicator(
+            color = Color.White,
+            trackColor = MaterialTheme.colorScheme.secondary
+        )
+        Text(
+            text = text,
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.primary
+        )
+    }
 }
 
 @Composable
