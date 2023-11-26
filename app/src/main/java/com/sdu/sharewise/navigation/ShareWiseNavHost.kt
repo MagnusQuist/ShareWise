@@ -18,6 +18,7 @@ import com.sdu.sharewise.ui.auth.RegisterView
 import com.sdu.sharewise.ui.group.CreateGroupView
 import com.sdu.sharewise.ui.group.CreateGroupViewModel
 import com.sdu.sharewise.ui.home.HomeView
+import com.sdu.sharewise.ui.home.HomeViewModel
 import com.sdu.sharewise.ui.intro.IntroView
 import com.sdu.sharewise.ui.profile.ProfileView
 import com.sdu.sharewise.ui.profile.ProfileViewModel
@@ -55,7 +56,7 @@ fun ShareWiseNavHost(
             route = "home"
         ) {
             composable(Routes.Home.route) {
-                val viewModel = hiltViewModel<ProfileViewModel>()
+                val viewModel = hiltViewModel<HomeViewModel>()
                 HomeView(viewModel, navController)
             }
             composable(Routes.CreateGroup.route) {

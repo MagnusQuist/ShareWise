@@ -21,8 +21,7 @@ class GroupRepositoryImpl @Inject constructor (
         members: MutableList<String?>
     ): Resource<Group> {
         return try {
-            val memberUuids = getUuidByEmail(members)
-            val group = Group(groupUid = groupUid, name = name, desc = desc, color = color, ownerUid = ownerUid, members = memberUuids)
+            val group = Group(groupUid = groupUid, name = name, desc = desc, color = color, ownerUid = ownerUid, members = members)
             firebaseDB.getReference("Groups").child(groupUid).setValue(group).await()
             Resource.Success(group)
         } catch (e: Exception) {

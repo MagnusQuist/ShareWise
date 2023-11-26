@@ -7,4 +7,7 @@ data class Group(
     val color: String,
     val ownerUid: String,
     val members: MutableList<String?> = mutableListOf(),
-)
+) {
+    // Secondary constructor with no-argument default values
+    constructor() : this("", "", "", "", "", mutableListOf())
+}
