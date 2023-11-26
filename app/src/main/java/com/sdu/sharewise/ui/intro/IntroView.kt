@@ -49,7 +49,7 @@ fun IntroView(navController: NavHostController) {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .padding(24.dp)
+            .padding(18.dp)
             .padding(top = topPadding.dp)
     ) {
         // Centered Image
@@ -85,7 +85,7 @@ fun IntroView(navController: NavHostController) {
             Text(
                 text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
                 style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.primary,
+                color = MaterialTheme.colorScheme.secondary,
                 modifier = Modifier
                     .fillMaxWidth()
                     .wrapContentHeight()

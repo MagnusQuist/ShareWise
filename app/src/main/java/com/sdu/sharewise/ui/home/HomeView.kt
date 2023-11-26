@@ -61,7 +61,7 @@ fun HomeView(viewModel: HomeViewModel, navController: NavHostController) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(24.dp)
+            .padding(18.dp)
     ) {
         Row(
             modifier = Modifier
@@ -115,7 +115,7 @@ fun HomeView(viewModel: HomeViewModel, navController: NavHostController) {
                     modifier = Modifier
                         .size(28.dp),
                     imageVector = Icons.Default.Add,
-                    tint = MaterialTheme.colorScheme.secondary,
+                    tint = MaterialTheme.colorScheme.primary,
                     contentDescription = "Add Group"
                 )
             }
