@@ -19,7 +19,7 @@ val LightColors = lightColorScheme(
     tertiaryContainer = md_theme_light_tertiaryContainer,
     error = md_theme_light_error,
     outline = md_theme_light_outline,
-
+    outlineVariant = md_theme_light_outlineVariant,
 )
 
 val DarkColors = darkColorScheme(

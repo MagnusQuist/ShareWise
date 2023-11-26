@@ -20,31 +20,24 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun SettingsGroup(
     name: String,
-    topBorder: Boolean,
-    bottomBorder: Boolean,
     content: @Composable ColumnScope.() -> Unit
 ) {
-    Column(modifier = Modifier.padding(vertical = 8.dp)) {
-        if (topBorder) {
-            Divider(modifier = Modifier.background(MaterialTheme.colorScheme.tertiary))
-        }
+    Column {
         Text(
             text = name.uppercase(),
             style = MaterialTheme.typography.labelMedium,
             color = MaterialTheme.colorScheme.secondary,
         )
-        if (name !== "") { Spacer(modifier = Modifier.height(4.dp)) }
         Surface(
-            color = Color.Transparent,
+            color = MaterialTheme.colorScheme.onPrimary,
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(4),
         ) {
-            Column {
+            Column(
+                modifier = Modifier.padding(16.dp, 14.dp)
+            ) {
                 content()
             }
-        }
-        if (bottomBorder) {
-            Divider(modifier = Modifier.background(MaterialTheme.colorScheme.tertiary))
         }
     }
 }
