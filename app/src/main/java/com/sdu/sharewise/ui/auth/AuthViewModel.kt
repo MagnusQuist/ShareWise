@@ -3,7 +3,7 @@ package com.sdu.sharewise.ui.auth
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseUser
-import com.sdu.sharewise.data.AuthRepository
+import com.sdu.sharewise.data.repository.AuthRepository
 import com.sdu.sharewise.data.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -39,6 +39,7 @@ class AuthViewModel @Inject constructor(
     fun register(name: String, email: String, password: String) = viewModelScope.launch {
         _registerFlow.value = Resource.Loading
         val result = repository.register(name, email, password)
+        // userRepository.createUser(currentUser!!.uid, name, email, phone = "")
         _registerFlow.value = result
     }
 

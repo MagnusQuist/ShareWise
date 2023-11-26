@@ -51,6 +51,7 @@ import com.sdu.sharewise.ui.components.FormFieldText
 fun LoginView(viewModel: AuthViewModel, navController: NavHostController) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    var isLoading by remember { mutableStateOf(false) }
 
     var isLoading by remember { mutableStateOf(false) }
 

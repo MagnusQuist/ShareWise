@@ -1,8 +1,13 @@
 package com.sdu.sharewise.di
 
 import com.google.firebase.auth.FirebaseAuth
-import com.sdu.sharewise.data.AuthRepository
-import com.sdu.sharewise.data.AuthRepositoryImpl
+import com.google.firebase.database.FirebaseDatabase
+import com.sdu.sharewise.data.repository.AuthRepository
+import com.sdu.sharewise.data.repository.AuthRepositoryImpl
+import com.sdu.sharewise.data.repository.GroupRepository
+import com.sdu.sharewise.data.repository.GroupRepositoryImpl
+import com.sdu.sharewise.data.repository.UserRepository
+import com.sdu.sharewise.data.repository.UserRepositoryImpl
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -16,4 +21,13 @@ class AppModule {
 
     @Provides
     fun provideAuthRepository(impl: AuthRepositoryImpl): AuthRepository = impl
+
+    @Provides
+    fun provideFirebaseDB(): FirebaseDatabase = FirebaseDatabase.getInstance()
+
+    @Provides
+    fun provideUserRepository(impl: UserRepositoryImpl): UserRepository = impl
+
+    @Provides
+    fun provideGroupRepository(impl: GroupRepositoryImpl): GroupRepository = impl
 }

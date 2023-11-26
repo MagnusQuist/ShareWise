@@ -1,6 +1,7 @@
-package com.sdu.sharewise.data
+package com.sdu.sharewise.data.repository
 
 import com.google.firebase.auth.FirebaseUser
+import com.sdu.sharewise.data.Resource
 
 interface AuthRepository {
     val currentUser: FirebaseUser?

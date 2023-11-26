@@ -3,6 +3,7 @@ plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id("com.google.gms.google-services")
+    id("com.google.firebase.firebase-perf")
     id("com.google.dagger.hilt.android")
     id("kotlin-kapt")
 }
@@ -51,8 +52,11 @@ android {
 
 dependencies {
     // Firebase
-    implementation("com.google.firebase:firebase-auth:22.3.0")
-    implementation("com.google.firebase:firebase-auth-ktx:22.2.0")
+    implementation(platform("com.google.firebase:firebase-bom:32.6.0"))
+    implementation("com.google.firebase:firebase-auth")
+    implementation("com.google.firebase:firebase-auth-ktx")
+    implementation("com.google.firebase:firebase-database")
+    implementation("com.google.firebase:firebase-perf")
 
     // Compose
     val composeBom = platform("androidx.compose:compose-bom:2023.10.01")
@@ -90,6 +94,9 @@ dependencies {
     implementation("com.google.dagger:hilt-android:2.48.1")
     implementation("androidx.hilt:hilt-navigation-compose:1.1.0")
     kapt("com.google.dagger:hilt-compiler:2.48.1")
+
+    // Color picker
+    implementation("com.github.skydoves:colorpicker-compose:1.0.0")
 }
 
 kapt {

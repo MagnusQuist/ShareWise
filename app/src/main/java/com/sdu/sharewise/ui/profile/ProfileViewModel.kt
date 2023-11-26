@@ -2,7 +2,7 @@ package com.sdu.sharewise.ui.profile
 
 import androidx.lifecycle.ViewModel
 import com.google.firebase.auth.FirebaseUser
-import com.sdu.sharewise.data.AuthRepository
+import com.sdu.sharewise.data.repository.AuthRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
