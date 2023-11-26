@@ -23,6 +23,22 @@ class CreateGroupViewModel @Inject constructor(
     private val _createGroupFlow = MutableStateFlow<Resource<Group>?>(null)
     val createGroupFlow: StateFlow<Resource<Group>?> = _createGroupFlow
 
+    private val _groupName = MutableStateFlow("")
+    private val _groupDescription = MutableStateFlow("")
+    private val _groupMembers = MutableStateFlow(SnapshotStateList<String>())
+
+    fun setGroupName(name: String) {
+        _groupName.value = name
+    }
+
+    fun setGroupDescription(description: String) {
+        _groupDescription.value = description
+    }
+
+    fun setGroupMembers(members: SnapshotStateList<String>) {
+        _groupMembers.value = members
+    }
+
     fun createGroup(name: String, desc: String, members: SnapshotStateList<String?>) = viewModelScope.launch {
         _createGroupFlow.value = Resource.Loading
         val groupUid = UUID.randomUUID().toString()

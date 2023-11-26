@@ -4,7 +4,9 @@ import android.content.Context
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.foundation.layout.Column
@@ -25,6 +27,7 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowBackIos
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material.icons.outlined.Description
@@ -51,13 +54,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusDirection
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.graphics.toColorInt
 import androidx.navigation.NavHostController
 import com.sdu.sharewise.data.Resource
 import com.sdu.sharewise.navigation.Routes
@@ -67,7 +73,7 @@ import com.sdu.sharewise.ui.components.FormFieldText
 fun CreateGroupView(viewModel: CreateGroupViewModel, navController: NavHostController) {
     var name by remember { mutableStateOf("") }
     var desc by remember { mutableStateOf("") }
-    var color by remember { mutableStateOf("") }
+    var color = { mutableStateListOf<String>() }
 
     var currentMember by remember { mutableStateOf("") }
     var members by remember { mutableStateOf(mutableStateListOf<String?>(null)) }
@@ -89,59 +95,61 @@ fun CreateGroupView(viewModel: CreateGroupViewModel, navController: NavHostContr
             modifier = Modifier
                 .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            IconButton(
-                modifier = Modifier
-                    .size(46.dp)
-                    .background(MaterialTheme.colorScheme.tertiary, CircleShape),
-                onClick = {
-                    if (navController.previousBackStackEntry != null) {
-                        navController.navigateUp()
-                    }
-                }) {
-                Icon(
-                    modifier = Modifier
-                        .size(24.dp),
-                    imageVector = Icons.Default.ArrowBack,
-                    tint = MaterialTheme.colorScheme.primary,
-                    contentDescription = "Go Back"
-                )
-            }
-
-            Text(text = viewModel.getCurrentUser?.displayName?: "")
-        }
-
-        Spacer(modifier = Modifier.height(32.dp))
-
-        Column {
-            Text(
-                text = "Group Owner:",
-                style = MaterialTheme.typography.bodyLarge,
-                color = contentColorFor(MaterialTheme.colorScheme.background)
-            )
-
-            Row (
+            Box(
                 modifier = Modifier
                     .fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                Text(
-                    text = viewModel.getCurrentUser?.displayName ?: "",
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = contentColorFor(MaterialTheme.colorScheme.background)
-                )
+                IconButton(
+                    modifier = Modifier
+                        .size(22.dp),
+                    onClick = {
+                        if (navController.previousBackStackEntry != null) {
+                            navController.navigateUp()
+                        }
+                    }) {
+                    Icon(
+                        modifier = Modifier
+                            .size(22.dp),
+                        imageVector = Icons.Default.ArrowBackIos,
+                        tint = MaterialTheme.colorScheme.primary,
+                        contentDescription = "Go Back"
+                    )
+                }
 
                 Text(
-                    text = ("(" + viewModel.getCurrentUser?.email + ")") ?: "",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = contentColorFor(MaterialTheme.colorScheme.background)
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    textAlign = TextAlign.Center,
+                    text = "Profile",
+                    style = MaterialTheme.typography.titleSmall,
+                    color = MaterialTheme.colorScheme.primary
                 )
             }
         }
 
-        Spacer(modifier = Modifier.height(32.dp))
+        Spacer(modifier = Modifier.height(20.dp))
+
+        Row(
+            Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.Center
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(86.dp)
+                    .clip(CircleShape)
+                    .background(
+                        brush = Brush.horizontalGradient(
+                            colors = listOf(
+                                MaterialTheme.colorScheme.primary,
+                                MaterialTheme.colorScheme.secondary
+                            )
+                        )
+                    )
+            )
+        }
+
+        Spacer(modifier = Modifier.height(20.dp))
 
         FormFieldText(
             text = name,
@@ -248,9 +256,9 @@ fun CreateGroupView(viewModel: CreateGroupViewModel, navController: NavHostContr
                 )
             } else {
                 Text(
-                    text = "Create",
+                    text = "Create Group",
                     style = MaterialTheme.typography.bodyLarge,
-                    color = Color.White
+                    color = MaterialTheme.colorScheme.onPrimary
                 )
             }
         }

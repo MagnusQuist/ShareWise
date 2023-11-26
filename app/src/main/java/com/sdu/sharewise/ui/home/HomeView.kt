@@ -21,6 +21,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.PersonOutline
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -131,31 +132,15 @@ fun HomeView(viewModel: HomeViewModel, navController: NavHostController) {
         LazyColumn(
             modifier = Modifier.fillMaxWidth(),
         ) {
-            item {
-                Text(
-                    text = "My Groups",
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = MaterialTheme.colorScheme.primary
-                )
-            }
-
             if (ownGroups.isEmpty()) {
                 item {
                     LoadingGroups(modifier = Modifier,"Loading...")
                 }
             } else {
                 itemsIndexed (ownGroups) { index, _ ->
-                    ownGroups[index]?.let { otherGroupCard(group = it) }
-                    Spacer(modifier = Modifier.height(26.dp))
+                    GroupCard(group = ownGroups[index], isOwned = true)
+                    Spacer(modifier = Modifier.height(18.dp))
                 }
-            }
-
-            item {
-                Text(
-                    text = "Other Groups",
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = MaterialTheme.colorScheme.primary
-                )
             }
 
             if (othersGroups.isEmpty()) {
@@ -164,8 +149,8 @@ fun HomeView(viewModel: HomeViewModel, navController: NavHostController) {
                 }
             } else {
                 itemsIndexed (othersGroups) { index, _ ->
-                    othersGroups[index]?.let { otherGroupCard(group = it) }
-                    Spacer(modifier = Modifier.height(26.dp))
+                    GroupCard(group = othersGroups[index], isOwned = false)
+                    Spacer(modifier = Modifier.height(18.dp))
                 }
             }
 
@@ -202,18 +187,16 @@ fun LoadingGroups(
 }
 
 @Composable
-fun otherGroupCard(
+fun GroupCard(
     modifier: Modifier = Modifier,
-    group: Group
+    group: Group,
+    isOwned: Boolean
 ) {
     Card(modifier = modifier
         .fillMaxWidth(),
         shape = MaterialTheme.shapes.small,
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.primaryContainer
-        ),
-        elevation = CardDefaults.cardElevation(
-            defaultElevation = 3.dp
+            containerColor = MaterialTheme.colorScheme.onSecondary
         )
     ) {
         Row(modifier = Modifier
@@ -230,10 +213,10 @@ fun otherGroupCard(
                         .size(20.dp),
                     imageVector = Icons.Default.PersonOutline,
                     tint = MaterialTheme.colorScheme.onSecondary,
-                    contentDescription = "People in group"
+                    contentDescription = "Amount of group members"
                 )
                 Text(
-                    text = group.members.size.toString(),
+                    text = (group.members.size + 1).toString(),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSecondary
                 )
@@ -244,11 +227,25 @@ fun otherGroupCard(
                     .weight(1f)
                     .padding(14.dp)
             ) {
-                Text(
-                    text = group.name,
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = MaterialTheme.colorScheme.primary
-                )
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(
+                        text = group.name,
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                    if (isOwned) {
+                        Icon(
+                            modifier = Modifier
+                                .size(22.dp),
+                            imageVector = Icons.Default.Star,
+                            tint = MaterialTheme.colorScheme.tertiaryContainer,
+                            contentDescription = "Owned")
+                    }
+                }
                 Row(modifier = Modifier
                     .padding(top = 10.dp)
                 ) {
@@ -256,7 +253,7 @@ fun otherGroupCard(
                         .weight(1f)
                     ) {
                         Text(
-                            text = "Total Expense",
+                            text = "Total Expenses",
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.secondary
                         )
@@ -267,16 +264,15 @@ fun otherGroupCard(
                         )
                     }
                     Column(modifier = Modifier
-                        .weight(1f)
+                        .weight(1f),
+                        horizontalAlignment = Alignment.End
                     ) {
                         Text(
-                            textAlign = TextAlign.End,
                             text = "I'm Owed",
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.primary
                         )
                         Text(
-                            textAlign = TextAlign.End,
                             text = "1430.50 kr.",
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.outline
