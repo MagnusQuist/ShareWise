@@ -28,11 +28,40 @@ class UserRepositoryImpl @Inject constructor(
         }
     }
 
+    override suspend fun updateUserName(uuid: String, name: String): Resource<String> {
+        return try {
+            firebaseDB.getReference("Users").child(uuid).child("name").setValue(name).await()
+            Resource.Success(name)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Resource.Failure(e)
+        }
+    }
+
+    override suspend fun updateUserEmail(
+        uuid: String,
+        email: String
+    ): Resource<String> {
+        return try {
+            firebaseDB.getReference("Users").child(uuid).child("email").setValue(email).await()
+            Resource.Success(email)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Resource.Failure(e)
+        }
+    }
+
     override suspend fun updateUserPhone(
         uuid: String,
         phone: String
-    ): Resource<User> {
-        TODO("Not yet implemented")
+    ): Resource<String> {
+        return try {
+            firebaseDB.getReference("Users").child(uuid).child("phone").setValue(phone).await()
+            Resource.Success(phone)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Resource.Failure(e)
+        }
     }
 
     override suspend fun deleteUser() {

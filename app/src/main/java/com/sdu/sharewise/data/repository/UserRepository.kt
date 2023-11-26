@@ -7,6 +7,8 @@ import com.sdu.sharewise.data.model.User
 interface UserRepository {
     val database: FirebaseDatabase?
     suspend fun createUser(uuid: String, name: String, email: String, phone: String): Resource<User>
-    suspend fun updateUserPhone(uuid: String, phone: String): Resource<User>
+    suspend fun updateUserName(uuid: String, name: String): Resource<String>
+    suspend fun updateUserEmail(uuid: String, email: String): Resource<String>
+    suspend fun updateUserPhone(uuid: String, phone: String): Resource<String>
     suspend fun deleteUser()
 }
