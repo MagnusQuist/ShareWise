@@ -53,6 +53,8 @@ fun LoginView(viewModel: AuthViewModel, navController: NavHostController) {
     var password by remember { mutableStateOf("") }
     var isLoading by remember { mutableStateOf(false) }
 
+    var isLoading by remember { mutableStateOf(false) }
+
     val loginFlow = viewModel.loginFlow.collectAsState()
 
     val focusManager = LocalFocusManager.current

@@ -179,7 +179,7 @@ fun RegisterView(viewModel: AuthViewModel?, navController: NavHostController) {
                 onClick = {
                     navController.navigate(Routes.Login.route)
                 },
-                style = MaterialTheme.typography.bodyMedium
+                style = MaterialTheme.typography.bodyMedium,
             )
 
             registerFlow?.value?.let {
