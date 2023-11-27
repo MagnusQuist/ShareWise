@@ -120,7 +120,7 @@ fun ProfileNameView(
                         uuid = viewModel.getCurrentUser?.uid?: "",
                         name = name
                         )
-                        navController.navigate(Routes.Profile.route) },
+                        navController.navigateUp() },
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(58.dp)

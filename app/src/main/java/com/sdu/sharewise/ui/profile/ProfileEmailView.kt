@@ -120,7 +120,7 @@ fun ProfileEmailView(
                         uuid = viewModel.getCurrentUser?.uid?: "",
                         email = email
                         )
-                        navController.navigate(Routes.Profile.route) },
+                        navController.navigateUp() },
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(58.dp)

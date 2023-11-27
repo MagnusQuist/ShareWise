@@ -88,7 +88,7 @@ fun ProfilePhoneView(
                         modifier = Modifier
                             .fillMaxWidth(),
                         textAlign = TextAlign.Center,
-                        text = "Edit Phone",
+                        text = "Edit Phone No.",
                         style = MaterialTheme.typography.titleSmall,
                         color = MaterialTheme.colorScheme.primary
                     )
@@ -120,7 +120,7 @@ fun ProfilePhoneView(
                         uuid = viewModel.getCurrentUser?.uid?: "",
                         phone = phone
                         )
-                        navController.navigate(Routes.Profile.route) },
+                        navController.navigateUp() },
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(58.dp)
