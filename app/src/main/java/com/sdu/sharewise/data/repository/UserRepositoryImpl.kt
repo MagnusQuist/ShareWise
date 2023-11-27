@@ -80,19 +80,6 @@ class UserRepositoryImpl @Inject constructor(
         return Resource.Failure(Exception("Not working. Come back next year"))
     }
 
-    suspend fun updateUserEmailInFirestore(userId: String, newEmail: String): Resource<Unit> {
-        Log.d("CHANGE EMAIL IN FIRESTORE","PLS")
-        return try {
-            // Update the Firestore document with the new email
-            firebaseDB.getReference("Users").child(userId).child("email").setValue(newEmail).await()
-            Resource.Success(Unit)
-        } catch (e: Exception) {
-            // Handle Firestore update error and log the details
-            Log.e("FirestoreUpdate", "Failed to update Firestore document: ${e.message}", e)
-            Resource.Failure(e)
-        }
-    }
-
     override suspend fun updateUserPhone(
         uuid: String,
         phone: String
