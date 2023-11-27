@@ -25,6 +25,7 @@ import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -138,7 +139,7 @@ fun HomeView(viewModel: HomeViewModel, navController: NavHostController) {
                 }
             } else {
                 itemsIndexed (ownGroups) { index, _ ->
-                    GroupCard(group = ownGroups[index], isOwned = true)
+                    GroupCard(group = ownGroups[index], isOwned = true, navController = navController)
                     Spacer(modifier = Modifier.height(18.dp))
                 }
             }
@@ -149,7 +150,7 @@ fun HomeView(viewModel: HomeViewModel, navController: NavHostController) {
                 }
             } else {
                 itemsIndexed (othersGroups) { index, _ ->
-                    GroupCard(group = othersGroups[index], isOwned = false)
+                    GroupCard(group = othersGroups[index], isOwned = false, navController = navController)
                     Spacer(modifier = Modifier.height(18.dp))
                 }
             }
@@ -186,14 +187,39 @@ fun LoadingGroups(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun GroupCard(
     modifier: Modifier = Modifier,
+    navController: NavHostController,
     group: Group,
     isOwned: Boolean
 ) {
-    Card(modifier = modifier
-        .fillMaxWidth(),
+    Card(
+        onClick = {
+            navController.navigate(
+                "selectedGroup/"+group.groupUid, // Use the route with the parameter
+                builder = {
+                    launchSingleTop = true
+
+                    popUpTo(Routes.Home.route) {
+                        saveState = true
+                    }
+                    navController.graph.startDestinationRoute?.let { route ->
+                        popUpTo(route) {
+                            saveState = true
+                        }
+                    }
+                    with(navController.currentBackStackEntry?.arguments) {
+                        this?.getString("groupUid")?.let { groupUid ->
+                            putString("groupUid", groupUid) // Provide the groupId here
+                        }
+                    }
+                }
+            )
+        },
+        modifier = modifier
+            .fillMaxWidth(),
         shape = MaterialTheme.shapes.small,
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.onSecondary
@@ -258,7 +284,7 @@ fun GroupCard(
                             color = MaterialTheme.colorScheme.secondary
                         )
                         Text(
-                            text = "13564.54 kr.",
+                            text = "0.00 kr.",
                             style = MaterialTheme.typography.bodyMedium,
                             color = contentColorFor(MaterialTheme.colorScheme.background)
                         )
@@ -273,7 +299,7 @@ fun GroupCard(
                             color = MaterialTheme.colorScheme.primary
                         )
                         Text(
-                            text = "1430.50 kr.",
+                            text = "0.00 kr.",
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.outline
                         )
