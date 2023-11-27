@@ -22,6 +22,8 @@ import com.sdu.sharewise.ui.home.HomeViewModel
 import com.sdu.sharewise.ui.intro.IntroView
 import com.sdu.sharewise.ui.profile.ProfileView
 import com.sdu.sharewise.ui.profile.ProfileNameView
+import com.sdu.sharewise.ui.profile.ProfileEmailView
+import com.sdu.sharewise.ui.profile.ProfilePhoneView
 import com.sdu.sharewise.ui.profile.ProfileViewModel
 
 @Composable
@@ -72,7 +74,14 @@ fun ShareWiseNavHost(
                 val viewModel = hiltViewModel<ProfileViewModel>()
                 ProfileNameView(viewModel, navController)
             }
-
+            composable(Routes.ProfileEmail.route) {
+                val viewModel = hiltViewModel<ProfileViewModel>()
+                ProfileEmailView(viewModel, navController)
+            }
+            composable(Routes.ProfilePhone.route) {
+                val viewModel = hiltViewModel<ProfileViewModel>()
+                ProfilePhoneView(viewModel, navController)
+            }
         }
     }
 }

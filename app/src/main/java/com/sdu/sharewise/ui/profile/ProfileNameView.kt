@@ -119,15 +119,15 @@ fun ProfileNameView(
                     onClick = {viewModel.setUsername(
                         uuid = viewModel.getCurrentUser?.uid?: "",
                         name = name
-                )   , navController.navigate(Routes.Profile.route)},
+                        )
+                        navController.navigate(Routes.Profile.route) },
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(58.dp)
                         .clip(MaterialTheme.shapes.small)
                         .background(MaterialTheme.colorScheme.primary)
-                    text = "Save changes"
                 ) {Text(
-                    text = "Sign In",
+                    text = "Save Changes",
                     style = MaterialTheme.typography.bodyLarge,
                     color = Color.White
                 )

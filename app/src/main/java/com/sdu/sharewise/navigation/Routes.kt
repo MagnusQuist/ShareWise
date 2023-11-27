@@ -9,4 +9,7 @@ sealed class Routes(val route: String) {
     data object CreateGroup : Routes("CreateGroup")
 
     data object ProfileName : Routes("ProfileName");
+    data object ProfileEmail : Routes("ProfileEmail");
+    data object ProfilePhone : Routes("ProfilePhone");
+
 }
