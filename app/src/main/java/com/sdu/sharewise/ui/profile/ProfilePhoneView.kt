@@ -1,5 +1,6 @@
 package com.sdu.sharewise.ui.profile
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -10,38 +11,44 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBackIos
-import androidx.compose.material.icons.outlined.Lock
+import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusDirection
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.sdu.sharewise.navigation.Routes
-import com.sdu.sharewise.ui.components.ProfileItemComp
-import com.sdu.sharewise.ui.components.SettingsClickableComp
+import com.sdu.sharewise.ui.components.FormFieldText
 import com.sdu.sharewise.ui.components.SettingsGroup
-import com.sdu.sharewise.ui.components.SettingsSwitchComp
 
 @Composable
-fun ProfileView(
+fun ProfilePhoneView(
     viewModel: ProfileViewModel = hiltViewModel(),
     navController: NavHostController
 ) {
+    var phone by remember { mutableStateOf("") }
+    val focusManager = LocalFocusManager.current
     Surface(
         color = MaterialTheme.colorScheme.onSecondary,
         modifier = Modifier.fillMaxSize()
@@ -81,7 +88,7 @@ fun ProfileView(
                         modifier = Modifier
                             .fillMaxWidth(),
                         textAlign = TextAlign.Center,
-                        text = "Profile",
+                        text = "Edit Phone No.",
                         style = MaterialTheme.typography.titleSmall,
                         color = MaterialTheme.colorScheme.primary
                     )
@@ -93,73 +100,41 @@ fun ProfileView(
             SettingsGroup(
                 name = "",
             ) {
-                SettingsClickableComp(
-                    name = "Name",
-                    value = viewModel.getCurrentUser?.displayName?: "",
-                    color = MaterialTheme.colorScheme.primary
-                ) {
-                    navController.navigate(Routes.ProfileName.route)
 
-                    // Navigate to another page
-                }
-
-
-
-                SettingsClickableComp(
-                    name = "E-mail",
-                    value = viewModel.getCurrentUser?.email?: "",
-                    color = MaterialTheme.colorScheme.primary
-                ) {
-                    navController.navigate(Routes.ProfileEmail.route)
-                }
-                SettingsClickableComp(
-                    name = "Mobile no.",
-                    value = viewModel.getCurrentUser?.phoneNumber?: "",
-                    color = MaterialTheme.colorScheme.primary
-                ) {
-                    navController.navigate(Routes.ProfilePhone.route)
-                    // Navigate to another page
-                }
-            }
-
-            SettingsGroup(
-                name = "",
-            ) {
-                SettingsSwitchComp(
-                    name = "Notifications",
-                    state = viewModel.isSwitchOn.collectAsState(),
-                    color = MaterialTheme.colorScheme.primary
-                ) {
-                    viewModel.toggleSwitch()
-                }
-                SettingsClickableComp(
-                    name = "Transactions",
-                    value = "",
-                    color = MaterialTheme.colorScheme.primary
-                ) {
-                    // Navigate to another page
-                }
-            }
-
-            SettingsGroup(
-                name = "",
-            ) {
-                SettingsClickableComp(
-                    name = "Sign Out",
-                    value = "",
-                    color = MaterialTheme.colorScheme.error
-                ) {
-                    viewModel.logout()
-                    navController.navigate(Routes.Login.route) {
-                        popUpTo(Routes.Login.route) { inclusive = true }
-                    }
-                }
-                ProfileItemComp(
-                    name = "User ID",
-                    value = viewModel.getCurrentUser?.uid?: "",
-                    color = MaterialTheme.colorScheme.primary
+                FormFieldText(
+                    text = phone,
+                    placeholder = viewModel.getCurrentUser?.phoneNumber?: "",
+                    onChange = {
+                        phone = it
+                    },
+                    imeAction = ImeAction.Next,
+                    keyboardType = KeyboardType.Text,
+                    keyBoardActions = KeyboardActions(
+                        onNext = {
+                            focusManager.moveFocus(FocusDirection.Down)
+                        }
+                    )
                 )
+                Button(
+                    onClick = {viewModel.setPhone(
+                        uuid = viewModel.getCurrentUser?.uid?: "",
+                        phone = phone
+                        )
+                        navController.navigateUp() },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(58.dp)
+                        .clip(MaterialTheme.shapes.small)
+                        .background(MaterialTheme.colorScheme.primary)
+                ) {Text(
+                    text = "Save Changes",
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = Color.White
+                )
+
+                }
             }
+
         }
     }
 }
