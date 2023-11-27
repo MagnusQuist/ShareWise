@@ -1,5 +1,6 @@
 package com.sdu.sharewise.ui.profile
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -19,8 +20,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -29,12 +33,19 @@ import com.sdu.sharewise.navigation.Routes
 import com.sdu.sharewise.ui.components.ProfileItemComp
 import com.sdu.sharewise.ui.components.SettingsClickableComp
 import com.sdu.sharewise.ui.components.SettingsGroup
+import com.sdu.sharewise.ui.components.SettingsSwitchComp
 
 @Composable
 fun ProfileView(
     viewModel: ProfileViewModel = hiltViewModel(),
     navController: NavHostController
 ) {
+    val context = LocalContext.current.applicationContext
+
+    LaunchedEffect(null) {
+        viewModel.getCurrentUser?.uid?.let { viewModel.fetchUser(it) }
+    }
+
     Surface(
         color = MaterialTheme.colorScheme.onSecondary,
         modifier = Modifier.fillMaxSize()
@@ -86,38 +97,47 @@ fun ProfileView(
             SettingsGroup(
                 name = "",
             ) {
-                SettingsClickableComp(
-                    name = "Name",
-                    value = viewModel.getCurrentUser?.displayName?: "",
-                    color = MaterialTheme.colorScheme.primary
-                ) {
-                    // Navigate to another page
+                viewModel.user.value?.let {
+                    SettingsClickableComp(
+                        name = "Name",
+                        value = it.name,
+                        color = MaterialTheme.colorScheme.primary
+                    ) {
+                        navController.navigate(Routes.ProfileName.route)
+                        // Navigate to another page
+                    }
                 }
-                SettingsClickableComp(
-                    name = "E-mail",
-                    value = viewModel.getCurrentUser?.email?: "",
-                    color = MaterialTheme.colorScheme.primary
-                ) {
-                    // Navigate to another page
+
+                viewModel.user.value?.let {
+                    SettingsClickableComp(
+                        name = "E-mail",
+                        value = it.email,
+                        color = MaterialTheme.colorScheme.primary
+                    ) {
+                        navController.navigate(Routes.ProfileEmail.route)
+                    }
                 }
-                SettingsClickableComp(
-                    name = "Mobile no.",
-                    value = viewModel.getCurrentUser?.phoneNumber?: "",
-                    color = MaterialTheme.colorScheme.primary
-                ) {
-                    // Navigate to another page
+                viewModel.user.value?.phone?.let {
+                    SettingsClickableComp(
+                        name = "Mobile no.",
+                        value = it,
+                        color = MaterialTheme.colorScheme.primary
+                    ) {
+                        navController.navigate(Routes.ProfilePhone.route)
+                        // Navigate to another page
+                    }
                 }
             }
 
             SettingsGroup(
                 name = "",
             ) {
-                SettingsClickableComp(
+                SettingsSwitchComp(
                     name = "Notifications",
-                    value = "",
+                    state = viewModel.isSwitchOn.collectAsState(),
                     color = MaterialTheme.colorScheme.primary
                 ) {
-                    // Navigate to another page
+                    viewModel.toggleSwitch()
                 }
                 SettingsClickableComp(
                     name = "Transactions",
@@ -125,6 +145,7 @@ fun ProfileView(
                     color = MaterialTheme.colorScheme.primary
                 ) {
                     // Navigate to another page
+                    Toast.makeText(context, "Not implemented yet", Toast.LENGTH_SHORT).show()
                 }
             }
 

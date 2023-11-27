@@ -61,5 +61,4 @@ class HomeViewModel @Inject constructor(
 
     val getCurrentUser: FirebaseUser?
         get() = authRepository.currentUser
-
 }
