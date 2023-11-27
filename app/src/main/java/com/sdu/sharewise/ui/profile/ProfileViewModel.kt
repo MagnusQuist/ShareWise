@@ -9,11 +9,13 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
+import com.sdu.sharewise.data.Resource
 import com.sdu.sharewise.data.model.User
 import com.sdu.sharewise.data.repository.AuthRepository
 import com.sdu.sharewise.data.repository.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -27,6 +29,9 @@ class ProfileViewModel @Inject constructor(
 
     private val _user = MutableLiveData<User?>()
     val user: MutableLiveData<User?> get() = _user
+
+    private val _updateEmailFlow = MutableStateFlow<Resource<FirebaseUser>?>(null)
+    val updateEmailFlow: StateFlow<Resource<FirebaseUser>?> = _updateEmailFlow
 
     private val _errorMessage = MutableLiveData<String>()
     val errorMessage: LiveData<String> get() = _errorMessage
@@ -60,7 +65,7 @@ class ProfileViewModel @Inject constructor(
         get() = authRepository.currentUser
 
     fun setUsername(uuid: String, name: String) = viewModelScope.launch {
-        userRepository.updateUserName(uuid = uuid, name = name)
+        userRepository.updateUserName(uuid = uuid, name = name, authRepository = authRepository)
     }
 
     fun setEmail(uuid: String, newEmail: String, password: String) = viewModelScope.launch{

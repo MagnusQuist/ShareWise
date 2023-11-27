@@ -4,6 +4,8 @@ import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.auth.EmailAuthCredential
 import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.auth.UserProfileChangeRequest
+import com.google.firebase.auth.userProfileChangeRequest
 import com.google.firebase.database.FirebaseDatabase
 import com.sdu.sharewise.data.Resource
 import com.sdu.sharewise.data.model.User
@@ -32,10 +34,12 @@ class UserRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun updateUserName(uuid: String, name: String): Resource<String> {
+    override suspend fun updateUserName(uuid: String, name: String, authRepository: AuthRepository): Resource<String> {
         return try {
+            authRepository.currentUser?.updateProfile(userProfileChangeRequest {
+                displayName = name
+            })
             firebaseDB.getReference("Users").child(uuid).child("name").setValue(name).await()
-
             Resource.Success(name)
         } catch (e: Exception) {
             e.printStackTrace()
@@ -59,11 +63,7 @@ class UserRepositoryImpl @Inject constructor(
                     user.reauthenticate(credential).await()
                 }
 
-                val result = user?.verifyBeforeUpdateEmail(newEmail, )?.await()
-
-                if (result.) {
-
-                }
+                val result = user?.verifyBeforeUpdateEmail(newEmail)?.await()
 
                 // Update DB
                 firebaseDB.getReference("Users").child(uuid).child("email").setValue(newEmail).await()
