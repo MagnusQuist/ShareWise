@@ -15,6 +15,8 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBackIos
+import androidx.compose.material.icons.outlined.Email
+import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -39,6 +41,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.sdu.sharewise.navigation.Routes
+import com.sdu.sharewise.ui.components.FormFieldPassword
 import com.sdu.sharewise.ui.components.FormFieldText
 import com.sdu.sharewise.ui.components.SettingsGroup
 
@@ -47,8 +50,11 @@ fun ProfileEmailView(
     viewModel: ProfileViewModel = hiltViewModel(),
     navController: NavHostController
 ) {
-    var email by remember { mutableStateOf("") }
+    var newEmail by remember { mutableStateOf("") }
+    var password by remember { mutableStateOf("") }
+
     val focusManager = LocalFocusManager.current
+
     Surface(
         color = MaterialTheme.colorScheme.onSecondary,
         modifier = Modifier.fillMaxSize()
@@ -95,17 +101,20 @@ fun ProfileEmailView(
                 }
             }
 
-            Spacer(modifier = Modifier.height(10.dp))
+            Spacer(modifier = Modifier.height(32.dp))
 
-            SettingsGroup(
-                name = "",
-            ) {
-
+            Column {
                 FormFieldText(
-                    text = email,
+                    text = newEmail,
                     placeholder = viewModel.getCurrentUser?.email?: "",
                     onChange = {
-                        email = it
+                        newEmail = it
+                    },
+                    leadingIcon = {
+                        Icon(
+                            Icons.Outlined.Email,
+                            "Email Icon",
+                        )
                     },
                     imeAction = ImeAction.Next,
                     keyboardType = KeyboardType.Text,
@@ -115,26 +124,51 @@ fun ProfileEmailView(
                         }
                     )
                 )
+
+                Spacer(modifier = Modifier.height(18.dp))
+
+                FormFieldPassword(
+                    text = password,
+                    placeholder = "Password",
+                    onChange = {
+                        password = it
+                    },
+                    leadingIcon = {
+                        Icon(
+                            Icons.Outlined.Lock,
+                            "Password Icon",
+                        )
+                    },
+                    imeAction = ImeAction.Next,
+                    keyboardType = KeyboardType.Password,
+                    keyBoardActions = KeyboardActions(
+                        onNext = {
+                            focusManager.moveFocus(FocusDirection.Down)
+                        }
+                    )
+                )
+
+                Spacer(modifier = Modifier.height(32.dp))
+
                 Button(
                     onClick = {viewModel.setEmail(
                         uuid = viewModel.getCurrentUser?.uid?: "",
-                        email = email
-                        )
+                        newEmail = newEmail,
+                        password = password)
                         navController.navigateUp() },
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(58.dp)
                         .clip(MaterialTheme.shapes.small)
                         .background(MaterialTheme.colorScheme.primary)
-                ) {Text(
-                    text = "Save Changes",
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = Color.White
-                )
-
+                ) {
+                    Text(
+                        text = "Save Changes",
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = Color.White
+                    )
                 }
             }
-
         }
     }
 }

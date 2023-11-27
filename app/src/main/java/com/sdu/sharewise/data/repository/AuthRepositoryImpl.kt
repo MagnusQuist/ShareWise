@@ -18,6 +18,7 @@ class AuthRepositoryImpl @Inject constructor(
         return try {
             val result = firebaseAuth.signInWithEmailAndPassword(email, password).await()
             Resource.Success(result.user!!)
+
         } catch (e: Exception) {
             e.printStackTrace()
             Resource.Failure(e)

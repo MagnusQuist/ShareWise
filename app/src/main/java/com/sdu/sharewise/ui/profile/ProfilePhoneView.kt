@@ -15,6 +15,8 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBackIos
+import androidx.compose.material.icons.outlined.Lock
+import androidx.compose.material.icons.outlined.Phone
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -48,7 +50,9 @@ fun ProfilePhoneView(
     navController: NavHostController
 ) {
     var phone by remember { mutableStateOf("") }
+
     val focusManager = LocalFocusManager.current
+
     Surface(
         color = MaterialTheme.colorScheme.onSecondary,
         modifier = Modifier.fillMaxSize()
@@ -95,17 +99,20 @@ fun ProfilePhoneView(
                 }
             }
 
-            Spacer(modifier = Modifier.height(10.dp))
+            Spacer(modifier = Modifier.height(32.dp))
 
-            SettingsGroup(
-                name = "",
-            ) {
-
+            Column {
                 FormFieldText(
                     text = phone,
                     placeholder = viewModel.getCurrentUser?.phoneNumber?: "",
                     onChange = {
                         phone = it
+                    },
+                    leadingIcon = {
+                        Icon(
+                            Icons.Outlined.Phone,
+                            "Phone Icon",
+                        )
                     },
                     imeAction = ImeAction.Next,
                     keyboardType = KeyboardType.Text,
@@ -115,6 +122,9 @@ fun ProfilePhoneView(
                         }
                     )
                 )
+
+                Spacer(modifier = Modifier.height(32.dp))
+
                 Button(
                     onClick = {viewModel.setPhone(
                         uuid = viewModel.getCurrentUser?.uid?: "",
@@ -126,15 +136,14 @@ fun ProfilePhoneView(
                         .height(58.dp)
                         .clip(MaterialTheme.shapes.small)
                         .background(MaterialTheme.colorScheme.primary)
-                ) {Text(
-                    text = "Save Changes",
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = Color.White
-                )
-
+                ) {
+                    Text(
+                        text = "Save Changes",
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = Color.White
+                    )
                 }
             }
-
         }
     }
 }

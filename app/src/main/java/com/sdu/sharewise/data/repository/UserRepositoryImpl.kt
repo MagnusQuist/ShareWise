@@ -1,5 +1,9 @@
 package com.sdu.sharewise.data.repository
 
+import com.google.android.gms.tasks.OnCompleteListener
+import com.google.firebase.auth.EmailAuthCredential
+import com.google.firebase.auth.EmailAuthProvider
+import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.FirebaseDatabase
 import com.sdu.sharewise.data.Resource
 import com.sdu.sharewise.data.model.User
@@ -31,6 +35,7 @@ class UserRepositoryImpl @Inject constructor(
     override suspend fun updateUserName(uuid: String, name: String): Resource<String> {
         return try {
             firebaseDB.getReference("Users").child(uuid).child("name").setValue(name).await()
+
             Resource.Success(name)
         } catch (e: Exception) {
             e.printStackTrace()
@@ -40,11 +45,33 @@ class UserRepositoryImpl @Inject constructor(
 
     override suspend fun updateUserEmail(
         uuid: String,
-        email: String
+        newEmail: String,
+        password: String,
+        authRepository: AuthRepository
     ): Resource<String> {
         return try {
-            firebaseDB.getReference("Users").child(uuid).child("email").setValue(email).await()
-            Resource.Success(email)
+            // Update Auth
+            val user = authRepository.currentUser
+            val credential = user?.email?.let { EmailAuthProvider.getCredential(it, password) }
+
+            try {
+                if (credential != null) {
+                    user.reauthenticate(credential).await()
+                }
+
+                val result = user?.verifyBeforeUpdateEmail(newEmail, )?.await()
+
+                if (result.) {
+
+                }
+
+                // Update DB
+                firebaseDB.getReference("Users").child(uuid).child("email").setValue(newEmail).await()
+                Resource.Success(newEmail)
+            } catch (e: Exception) {
+                e.printStackTrace()
+                Resource.Failure(e)
+            }
         } catch (e: Exception) {
             e.printStackTrace()
             Resource.Failure(e)

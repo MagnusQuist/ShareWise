@@ -1,26 +1,35 @@
 package com.sdu.sharewise.ui.profile
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseUser
-import com.sdu.sharewise.data.Resource
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
+import com.sdu.sharewise.data.model.User
 import com.sdu.sharewise.data.repository.AuthRepository
 import com.sdu.sharewise.data.repository.UserRepository
-import com.sdu.sharewise.data.repository.UserRepositoryImpl
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import java.util.UUID
 import javax.inject.Inject
 
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
-    private val repository: AuthRepository,
-    private val userRepository: UserRepository
+    private val authRepository: AuthRepository,
+    private val userRepository: UserRepository,
+    private val firebaseDB: FirebaseDatabase
 ) : ViewModel() {
 
+    private val _user = MutableLiveData<User?>()
+    val user: MutableLiveData<User?> get() = _user
 
+    private val _errorMessage = MutableLiveData<String>()
+    val errorMessage: LiveData<String> get() = _errorMessage
 
     private val _isSwitchOn: MutableStateFlow<Boolean> = MutableStateFlow(false)
     val isSwitchOn = _isSwitchOn.asStateFlow()
@@ -44,22 +53,45 @@ class ProfileViewModel @Inject constructor(
     fun checkTextInput(text: String) = text.isNotEmpty()
 
     fun logout() {
-        repository.logout()
+        authRepository.logout()
     }
 
     val getCurrentUser: FirebaseUser?
-        get() = repository.currentUser
+        get() = authRepository.currentUser
 
     fun setUsername(uuid: String, name: String) = viewModelScope.launch {
-        userRepository.updateUserName(uuid, name)
+        userRepository.updateUserName(uuid = uuid, name = name)
     }
 
-    fun setEmail(uuid: String, email: String) = viewModelScope.launch{
-        userRepository.updateUserEmail(uuid, email)
+    fun setEmail(uuid: String, newEmail: String, password: String) = viewModelScope.launch{
+        userRepository.updateUserEmail(uuid = uuid, newEmail = newEmail, password = password, authRepository = authRepository)
     }
 
-    fun setPhone(uuid: String,phone: String) = viewModelScope.launch {
-        userRepository.updateUserPhone(uuid, phone)
+    fun setPhone(uuid: String, phone: String) = viewModelScope.launch {
+        userRepository.updateUserPhone(uuid = uuid, phone = phone)
+    }
+
+    fun fetchUser(uuid: String) {
+        firebaseDB.getReference("Users").child(uuid).addListenerForSingleValueEvent(object :
+            ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val userSnap = snapshot.getValue(User::class.java)
+
+                if (userSnap != null) {
+                    if (userSnap.uuid == authRepository.currentUser?.uid) {
+                        _user.value = userSnap
+                    } else {
+                        _errorMessage.value = "User not logged in"
+                    }
+                } else {
+                    _errorMessage.value = "User not found."
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                _errorMessage.value = "Fail to get user."
+            }
+        })
     }
 
     companion object {
