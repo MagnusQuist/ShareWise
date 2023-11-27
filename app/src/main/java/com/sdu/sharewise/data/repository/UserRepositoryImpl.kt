@@ -43,7 +43,7 @@ class UserRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun updateUserName(uuid: String, name: String): Resource<String> {
+    override suspend fun updateUserName(uuid: String, name: String, authRepository: AuthRepository): Resource<String> {
         val trace = FirebasePerformance.getInstance().newTrace("updateUserName_trace")
         trace.start()
 
@@ -90,7 +90,7 @@ class UserRepositoryImpl @Inject constructor(
             .addOnFailureListener {
                 return@addOnFailureListener
             }
-        return Resource.Failure(Exception("Not working. Come back next year"))
+        return Resource.Failure(Exception("Unexpected Failure"))
     }
 
     override suspend fun updateUserPhone(
