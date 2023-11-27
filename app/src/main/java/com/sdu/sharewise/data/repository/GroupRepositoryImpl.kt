@@ -1,6 +1,7 @@
 package com.sdu.sharewise.data.repository
 
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.perf.FirebasePerformance
 import com.sdu.sharewise.data.Resource
 import com.sdu.sharewise.data.model.Group
 import com.sdu.sharewise.data.utils.await
@@ -20,11 +21,16 @@ class GroupRepositoryImpl @Inject constructor (
         ownerUid: String,
         members: MutableList<String?>
     ): Resource<Group> {
+        val trace = FirebasePerformance.getInstance().newTrace("createGroup_trace")
+        trace.start() //Group creation tracing
+
         return try {
             val group = Group(groupUid = groupUid, name = name, desc = desc, color = color, ownerUid = ownerUid, members = members)
             firebaseDB.getReference("Groups").child(groupUid).setValue(group).await()
+            trace.stop()
             Resource.Success(group)
         } catch (e: Exception) {
+            trace.stop()
             e.printStackTrace()
             Resource.Failure(e)
         }

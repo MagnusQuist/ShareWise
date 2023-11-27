@@ -11,6 +11,7 @@ import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.UserProfileChangeRequest
 import com.google.firebase.auth.userProfileChangeRequest
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.perf.FirebasePerformance
 import com.sdu.sharewise.data.Resource
 import com.sdu.sharewise.data.model.User
 import com.sdu.sharewise.data.utils.await
@@ -28,24 +29,33 @@ class UserRepositoryImpl @Inject constructor(
         email: String,
         phone: String
     ): Resource<User> {
+        val trace = FirebasePerformance.getInstance().newTrace("createUser_trace")
+        trace.start()
         return try {
             val user = User(uuid = uuid, name = name, email = email, phone = phone)
             firebaseDB.getReference("Users").child(uuid).setValue(user).await()
+            trace.stop()
             Resource.Success(user)
         } catch (e: Exception) {
+            trace.stop()
             e.printStackTrace()
             Resource.Failure(e)
         }
     }
 
-    override suspend fun updateUserName(uuid: String, name: String, authRepository: AuthRepository): Resource<String> {
+    override suspend fun updateUserName(uuid: String, name: String): Resource<String> {
+        val trace = FirebasePerformance.getInstance().newTrace("updateUserName_trace")
+        trace.start()
+
         return try {
             authRepository.currentUser?.updateProfile(userProfileChangeRequest {
                 displayName = name
             })
             firebaseDB.getReference("Users").child(uuid).child("name").setValue(name).await()
+            trace.stop()
             Resource.Success(name)
         } catch (e: Exception) {
+            trace.stop()
             e.printStackTrace()
             Resource.Failure(e)
         }
@@ -57,6 +67,9 @@ class UserRepositoryImpl @Inject constructor(
         password: String,
         authRepository: AuthRepository
     ): Resource<String> {
+        val trace = FirebasePerformance.getInstance().newTrace("updateUserEmail_trace")
+        trace.start()
+
         val user = authRepository.currentUser
         val credential = user?.email?.let { EmailAuthProvider.getCredential(it, password) }
             ?: return Resource.Failure(Exception("Bad credentials"))
@@ -84,10 +97,14 @@ class UserRepositoryImpl @Inject constructor(
         uuid: String,
         phone: String
     ): Resource<String> {
+        val trace = FirebasePerformance.getInstance().newTrace("updateUserPhone_trace")
+        trace.start()
         return try {
             firebaseDB.getReference("Users").child(uuid).child("phone").setValue(phone).await()
+            trace.stop()
             Resource.Success(phone)
         } catch (e: Exception) {
+            trace.stop()
             e.printStackTrace()
             Resource.Failure(e)
         }
