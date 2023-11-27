@@ -1,8 +1,12 @@
 package com.sdu.sharewise.data.repository
 
+import android.util.Log
 import com.google.android.gms.tasks.OnCompleteListener
+import com.google.android.gms.tasks.Task
+import com.google.firebase.auth.AuthCredential
 import com.google.firebase.auth.EmailAuthCredential
 import com.google.firebase.auth.EmailAuthProvider
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.UserProfileChangeRequest
 import com.google.firebase.auth.userProfileChangeRequest
@@ -53,27 +57,38 @@ class UserRepositoryImpl @Inject constructor(
         password: String,
         authRepository: AuthRepository
     ): Resource<String> {
-        return try {
-            // Update Auth
-            val user = authRepository.currentUser
-            val credential = user?.email?.let { EmailAuthProvider.getCredential(it, password) }
+        val user = authRepository.currentUser
+        val credential = user?.email?.let { EmailAuthProvider.getCredential(it, password) }
+            ?: return Resource.Failure(Exception("Bad credentials"))
 
-            try {
-                if (credential != null) {
-                    user.reauthenticate(credential).await()
+        user.reauthenticate(credential)
+            .addOnCompleteListener {
+                user.verifyBeforeUpdateEmail(newEmail).addOnCompleteListener { updateEmailTask ->
+                    if (updateEmailTask.isSuccessful) {
+                        firebaseDB.getReference("Users").child(uuid).child("email").setValue(newEmail)
+                        authRepository.logout()
+                        return@addOnCompleteListener
+                    } else {
+                        val exception = updateEmailTask.exception
+                        Log.d("CHANGE EMAIL", exception.toString())
+                    }
                 }
-
-                val result = user?.verifyBeforeUpdateEmail(newEmail)?.await()
-
-                // Update DB
-                firebaseDB.getReference("Users").child(uuid).child("email").setValue(newEmail).await()
-                Resource.Success(newEmail)
-            } catch (e: Exception) {
-                e.printStackTrace()
-                Resource.Failure(e)
             }
+            .addOnFailureListener {
+                return@addOnFailureListener
+            }
+        return Resource.Failure(Exception("Not working. Come back next year"))
+    }
+
+    suspend fun updateUserEmailInFirestore(userId: String, newEmail: String): Resource<Unit> {
+        Log.d("CHANGE EMAIL IN FIRESTORE","PLS")
+        return try {
+            // Update the Firestore document with the new email
+            firebaseDB.getReference("Users").child(userId).child("email").setValue(newEmail).await()
+            Resource.Success(Unit)
         } catch (e: Exception) {
-            e.printStackTrace()
+            // Handle Firestore update error and log the details
+            Log.e("FirestoreUpdate", "Failed to update Firestore document: ${e.message}", e)
             Resource.Failure(e)
         }
     }
