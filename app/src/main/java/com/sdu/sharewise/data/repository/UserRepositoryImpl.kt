@@ -1,5 +1,15 @@
 package com.sdu.sharewise.data.repository
 
+import android.util.Log
+import com.google.android.gms.tasks.OnCompleteListener
+import com.google.android.gms.tasks.Task
+import com.google.firebase.auth.AuthCredential
+import com.google.firebase.auth.EmailAuthCredential
+import com.google.firebase.auth.EmailAuthProvider
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.auth.UserProfileChangeRequest
+import com.google.firebase.auth.userProfileChangeRequest
 import com.google.firebase.database.FirebaseDatabase
 import com.sdu.sharewise.data.Resource
 import com.sdu.sharewise.data.model.User
@@ -28,11 +38,59 @@ class UserRepositoryImpl @Inject constructor(
         }
     }
 
+    override suspend fun updateUserName(uuid: String, name: String, authRepository: AuthRepository): Resource<String> {
+        return try {
+            authRepository.currentUser?.updateProfile(userProfileChangeRequest {
+                displayName = name
+            })
+            firebaseDB.getReference("Users").child(uuid).child("name").setValue(name).await()
+            Resource.Success(name)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Resource.Failure(e)
+        }
+    }
+
+    override suspend fun updateUserEmail(
+        uuid: String,
+        newEmail: String,
+        password: String,
+        authRepository: AuthRepository
+    ): Resource<String> {
+        val user = authRepository.currentUser
+        val credential = user?.email?.let { EmailAuthProvider.getCredential(it, password) }
+            ?: return Resource.Failure(Exception("Bad credentials"))
+
+        user.reauthenticate(credential)
+            .addOnCompleteListener {
+                user.verifyBeforeUpdateEmail(newEmail).addOnCompleteListener { updateEmailTask ->
+                    if (updateEmailTask.isSuccessful) {
+                        firebaseDB.getReference("Users").child(uuid).child("email").setValue(newEmail)
+                        authRepository.logout()
+                        return@addOnCompleteListener
+                    } else {
+                        val exception = updateEmailTask.exception
+                        Log.d("CHANGE EMAIL", exception.toString())
+                    }
+                }
+            }
+            .addOnFailureListener {
+                return@addOnFailureListener
+            }
+        return Resource.Failure(Exception("Not working. Come back next year"))
+    }
+
     override suspend fun updateUserPhone(
         uuid: String,
         phone: String
-    ): Resource<User> {
-        TODO("Not yet implemented")
+    ): Resource<String> {
+        return try {
+            firebaseDB.getReference("Users").child(uuid).child("phone").setValue(phone).await()
+            Resource.Success(phone)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Resource.Failure(e)
+        }
     }
 
     override suspend fun deleteUser() {

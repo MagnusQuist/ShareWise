@@ -21,19 +21,20 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.PersonOutline
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -44,24 +45,30 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.core.graphics.toColorInt
 import androidx.navigation.NavHostController
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.ValueEventListener
 import com.sdu.sharewise.R
 import com.sdu.sharewise.data.model.Group
 import com.sdu.sharewise.navigation.Routes
 
 @Composable
 fun HomeView(viewModel: HomeViewModel, navController: NavHostController) {
-    var ownGroups by remember { mutableStateOf(mutableStateListOf<Group?>(null)) }
-    var othersGroups by remember { mutableStateOf(mutableStateListOf<Group?>(null)) }
+    // Observe groups from ViewModel
+    val ownGroups by viewModel.ownGroups.observeAsState(emptyList())
+    val othersGroups by viewModel.othersGroups.observeAsState(emptyList())
+
+    // Observe error message from ViewModel
+    val errorMessage by viewModel.errorMessage.observeAsState(null)
+
+    // Fetch groups when the composable is first created
+    LaunchedEffect(Unit) {
+        viewModel.fetchGroups()
+    }
 
     val context = LocalContext.current.applicationContext
 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(24.dp)
+            .padding(18.dp)
     ) {
         Row(
             modifier = Modifier
@@ -115,7 +122,7 @@ fun HomeView(viewModel: HomeViewModel, navController: NavHostController) {
                     modifier = Modifier
                         .size(28.dp),
                     imageVector = Icons.Default.Add,
-                    tint = MaterialTheme.colorScheme.secondary,
+                    tint = MaterialTheme.colorScheme.primary,
                     contentDescription = "Add Group"
                 )
             }
@@ -126,71 +133,96 @@ fun HomeView(viewModel: HomeViewModel, navController: NavHostController) {
         LazyColumn(
             modifier = Modifier.fillMaxWidth(),
         ) {
-            item {
-                Text(
-                    text = "My Groups",
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = MaterialTheme.colorScheme.primary
-                )
+            if (ownGroups.isEmpty()) {
+                item {
+                    LoadingGroups(modifier = Modifier,"Loading...")
+                }
+            } else {
+                itemsIndexed (ownGroups) { index, _ ->
+                    GroupCard(group = ownGroups[index], isOwned = true, navController = navController)
+                    Spacer(modifier = Modifier.height(18.dp))
+                }
             }
 
-            itemsIndexed (ownGroups) { index, _ ->
-                ownGroups[index]?.let { otherGroupCard(group = it) }
-                Spacer(modifier = Modifier.height(26.dp))
+            if (othersGroups.isEmpty()) {
+                item {
+                    LoadingGroups(modifier = Modifier,"Loading...")
+                }
+            } else {
+                itemsIndexed (othersGroups) { index, _ ->
+                    GroupCard(group = othersGroups[index], isOwned = false, navController = navController)
+                    Spacer(modifier = Modifier.height(18.dp))
+                }
             }
 
-            item {
-                Text(
-                    text = "Other Groups",
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = MaterialTheme.colorScheme.primary
-                )
-            }
-
-            itemsIndexed (othersGroups) { index, _ ->
-                othersGroups[index]?.let { otherGroupCard(group = it) }
-                Spacer(modifier = Modifier.height(26.dp))
+            errorMessage?.let { message ->
+                Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
             }
         }
     }
-
-    viewModel.getDatabase.getReference("Groups").addValueEventListener(object : ValueEventListener {
-        override fun onDataChange(snapshot: DataSnapshot) {
-            ownGroups.clear()
-            othersGroups.clear()
-
-            for (childSnapshot in snapshot.children) {
-                val group = childSnapshot.getValue(Group::class.java)
-
-                if (group != null) {
-                    if (group.ownerUid == viewModel.getCurrentUser?.uid) {
-                        ownGroups.add(group)
-                    } else if (group.members.contains(viewModel.getCurrentUser?.email)) {
-                        othersGroups.add(group)
-                    }
-                }
-            }
-        }
-
-        override fun onCancelled(error: DatabaseError) {
-            Toast.makeText(context, "Fail to get groups.", Toast.LENGTH_SHORT).show()
-        }
-    })
 }
 
 @Composable
-fun otherGroupCard(
+fun LoadingGroups(
     modifier: Modifier = Modifier,
-    group: Group
+    text: String
 ) {
-    Card(modifier = modifier
-        .fillMaxWidth(),
+    Column (
+        modifier = modifier
+            .fillMaxWidth()
+            .height(60.dp)
+            .padding(24.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        CircularProgressIndicator(
+            color = Color.White,
+            trackColor = MaterialTheme.colorScheme.secondary
+        )
+        Text(
+            text = text,
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.primary
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun GroupCard(
+    modifier: Modifier = Modifier,
+    navController: NavHostController,
+    group: Group,
+    isOwned: Boolean
+) {
+    Card(
+        onClick = {
+            navController.navigate(
+                "selectedGroup/"+group.groupUid, // Use the route with the parameter
+                builder = {
+                    launchSingleTop = true
+
+                    popUpTo(Routes.Home.route) {
+                        saveState = true
+                    }
+                    navController.graph.startDestinationRoute?.let { route ->
+                        popUpTo(route) {
+                            saveState = true
+                        }
+                    }
+                    with(navController.currentBackStackEntry?.arguments) {
+                        this?.getString("groupUid")?.let { groupUid ->
+                            putString("groupUid", groupUid) // Provide the groupId here
+                        }
+                    }
+                }
+            )
+        },
+        modifier = modifier
+            .fillMaxWidth(),
         shape = MaterialTheme.shapes.small,
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.primaryContainer
-        ),
-        elevation = CardDefaults.cardElevation(
-            defaultElevation = 3.dp
+            containerColor = MaterialTheme.colorScheme.onSecondary
         )
     ) {
         Row(modifier = Modifier
@@ -207,10 +239,10 @@ fun otherGroupCard(
                         .size(20.dp),
                     imageVector = Icons.Default.PersonOutline,
                     tint = MaterialTheme.colorScheme.onSecondary,
-                    contentDescription = "People in group"
+                    contentDescription = "Amount of group members"
                 )
                 Text(
-                    text = group.members.size.toString(),
+                    text = (group.members.size + 1).toString(),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSecondary
                 )
@@ -221,11 +253,25 @@ fun otherGroupCard(
                     .weight(1f)
                     .padding(14.dp)
             ) {
-                Text(
-                    text = group.name,
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = MaterialTheme.colorScheme.primary
-                )
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(
+                        text = group.name,
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                    if (isOwned) {
+                        Icon(
+                            modifier = Modifier
+                                .size(22.dp),
+                            imageVector = Icons.Default.Star,
+                            tint = MaterialTheme.colorScheme.tertiaryContainer,
+                            contentDescription = "Owned")
+                    }
+                }
                 Row(modifier = Modifier
                     .padding(top = 10.dp)
                 ) {
@@ -233,28 +279,27 @@ fun otherGroupCard(
                         .weight(1f)
                     ) {
                         Text(
-                            text = "Total Expense",
+                            text = "Total Expenses",
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.secondary
                         )
                         Text(
-                            text = "13564.54 kr.",
+                            text = "0.00 kr.",
                             style = MaterialTheme.typography.bodyMedium,
                             color = contentColorFor(MaterialTheme.colorScheme.background)
                         )
                     }
                     Column(modifier = Modifier
-                        .weight(1f)
+                        .weight(1f),
+                        horizontalAlignment = Alignment.End
                     ) {
                         Text(
-                            textAlign = TextAlign.End,
                             text = "I'm Owed",
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.primary
                         )
                         Text(
-                            textAlign = TextAlign.End,
-                            text = "1430.50 kr.",
+                            text = "0.00 kr.",
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.outline
                         )
