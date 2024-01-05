@@ -41,7 +41,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.core.graphics.toColorInt
 import androidx.navigation.NavHostController
@@ -52,8 +51,7 @@ import com.sdu.sharewise.navigation.Routes
 @Composable
 fun HomeView(viewModel: HomeViewModel, navController: NavHostController) {
     // Observe groups from ViewModel
-    val ownGroups by viewModel.ownGroups.observeAsState(emptyList())
-    val othersGroups by viewModel.othersGroups.observeAsState(emptyList())
+    val groups by viewModel.groups.observeAsState(emptyList())
 
     // Observe error message from ViewModel
     val errorMessage by viewModel.errorMessage.observeAsState(null)
@@ -133,24 +131,17 @@ fun HomeView(viewModel: HomeViewModel, navController: NavHostController) {
         LazyColumn(
             modifier = Modifier.fillMaxWidth(),
         ) {
-            if (ownGroups.isEmpty()) {
+            if (groups.isEmpty()) {
                 item {
-                    LoadingGroups(modifier = Modifier,"Loading...")
+                    Text(
+                        text = "No groups yet. Create one and share your expenses!",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.secondary
+                    )
                 }
             } else {
-                itemsIndexed (ownGroups) { index, _ ->
-                    GroupCard(group = ownGroups[index], isOwned = true, navController = navController)
-                    Spacer(modifier = Modifier.height(18.dp))
-                }
-            }
-
-            if (othersGroups.isEmpty()) {
-                item {
-                    LoadingGroups(modifier = Modifier,"Loading...")
-                }
-            } else {
-                itemsIndexed (othersGroups) { index, _ ->
-                    GroupCard(group = othersGroups[index], isOwned = false, navController = navController)
+                itemsIndexed (groups) { index, _ ->
+                    GroupCard(group = groups[index], isOwned = true, navController = navController)
                     Spacer(modifier = Modifier.height(18.dp))
                 }
             }
