@@ -30,6 +30,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.sdu.sharewise.data.model.Group
+import com.sdu.sharewise.ui.components.NavigateToHomeButton
 
 @Composable
 fun SelectedGroupView (
@@ -68,22 +69,7 @@ fun SelectedGroupView (
                     modifier = Modifier
                         .fillMaxWidth(),
                 ) {
-                    IconButton(
-                        modifier = Modifier
-                            .size(22.dp),
-                        onClick = {
-                            if (navController.previousBackStackEntry != null) {
-                                navController.navigateUp()
-                            }
-                        }) {
-                        Icon(
-                            modifier = Modifier
-                                .size(22.dp),
-                            imageVector = Icons.Default.ArrowBackIos,
-                            tint = MaterialTheme.colorScheme.primary,
-                            contentDescription = "Go Back"
-                        )
-                    }
+                    NavigateToHomeButton(navController = navController)
 
                     selectedGroup?.let {
                         Text(
@@ -97,10 +83,7 @@ fun SelectedGroupView (
                     }
                 }
             }
-
             Spacer(modifier = Modifier.height(10.dp))
-
-
         }
     }
 
