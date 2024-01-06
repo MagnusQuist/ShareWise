@@ -1,7 +1,6 @@
 package com.sdu.sharewise.ui.group
 
 import android.widget.Toast
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -11,7 +10,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -34,11 +32,9 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.sdu.sharewise.data.model.Group
 import com.sdu.sharewise.navigation.Routes
-import com.sdu.sharewise.ui.components.NavigateToHomeButton
-
 
 @Composable
-fun SelectedGroupView (
+fun CreateGroupExpenseView (
     viewModel: SelectedGroupViewModel,
     navController: NavHostController
 ) {
@@ -74,7 +70,24 @@ fun SelectedGroupView (
                     modifier = Modifier
                         .fillMaxWidth(),
                 ) {
-                    NavigateToHomeButton(navController = navController)
+                    IconButton(
+                        modifier = Modifier
+                            .size(22.dp),
+                        onClick = {
+                            navController.navigate(Routes.Home.route) {
+                                popUpTo(Routes.Home.route)
+                            }
+                        }
+                    ) {
+                        Icon(
+                            modifier = Modifier
+                                .size(22.dp),
+                            imageVector = Icons.Default.ArrowBackIos,
+                            tint = MaterialTheme.colorScheme.primary,
+                            contentDescription = "Go Back"
+                        )
+                    }
+
                     selectedGroup?.let {
                         Text(
                             modifier = Modifier
@@ -86,23 +99,6 @@ fun SelectedGroupView (
                         )
                     }
                 }
-            }
-            IconButton(
-                modifier = Modifier
-                    .size(46.dp),
-                onClick = {
-                    navController.navigate(Routes.GroupExpense.route){ //TODO route should be createExpense
-                        popUpTo(Routes.Home.route)
-                    }
-                }
-            ) {
-                Icon(
-                    modifier = Modifier
-                        .size(28.dp),
-                    imageVector = Icons.Default.Add,
-                    tint = MaterialTheme.colorScheme.primary,
-                    contentDescription = "Add Expense"
-                )
             }
             Spacer(modifier = Modifier.height(10.dp))
         }
