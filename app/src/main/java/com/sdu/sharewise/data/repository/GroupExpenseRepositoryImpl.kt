@@ -8,6 +8,9 @@ import com.google.firebase.perf.FirebasePerformance
 import com.sdu.sharewise.data.Resource
 import com.sdu.sharewise.data.model.Expense
 import com.sdu.sharewise.data.utils.await
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import kotlinx.coroutines.CompletableDeferred
 import javax.inject.Inject
 
 class GroupExpenseRepositoryImpl @Inject constructor(
@@ -141,6 +144,44 @@ class GroupExpenseRepositoryImpl @Inject constructor(
             Resource.Failure(e)
         } finally {
             trace.stop()
+        }
+    }
+
+    override suspend fun userOwed(expenseCreator: String, amount: Float, groupUid: String) {
+        return withContext(Dispatchers.IO) {
+            val trace = FirebasePerformance.getInstance().newTrace("userOwed_trace")
+            trace.start()
+
+            val deferred = CompletableDeferred<Float>()
+
+            try {
+                val expensesRef = FirebaseDatabase.getInstance().getReference("groups/$groupUid/expenses")
+                expensesRef.addListenerForSingleValueEvent(object : ValueEventListener {
+                    override fun onDataChange(dataSnapshot: DataSnapshot) {
+                        var totalOwedToUser = 0f
+
+                        for (expenseSnapshot in dataSnapshot.children) {
+                            val expense = expenseSnapshot.getValue(Expense::class.java)
+                            // Check if the expense exists, the creator matches, and the expense is not paid
+                            if (expense != null && expense.expenseCreator == expenseCreator && !expense.paid) {
+                                totalOwedToUser += expense.amount
+                            }
+                        }
+
+                        deferred.complete(totalOwedToUser)
+                    }
+
+                    override fun onCancelled(databaseError: DatabaseError) {
+                        deferred.completeExceptionally(databaseError.toException())
+                    }
+                })
+            } catch (e: Exception) {
+                deferred.completeExceptionally(e)
+            } finally {
+                trace.stop()
+            }
+
+            deferred.await()
         }
     }
 }
