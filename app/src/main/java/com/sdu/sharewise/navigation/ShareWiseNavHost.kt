@@ -15,6 +15,8 @@ import androidx.navigation.navigation
 import com.sdu.sharewise.ui.auth.AuthViewModel
 import com.sdu.sharewise.ui.auth.LoginView
 import com.sdu.sharewise.ui.auth.RegisterView
+import com.sdu.sharewise.ui.group.CreateGroupExpenseView
+import com.sdu.sharewise.ui.group.CreateGroupExpenseViewModel
 import com.sdu.sharewise.ui.group.CreateGroupView
 import com.sdu.sharewise.ui.group.CreateGroupViewModel
 import com.sdu.sharewise.ui.group.SelectedGroupView
@@ -73,6 +75,7 @@ fun ShareWiseNavHost(
                 val viewModel = hiltViewModel<ProfileViewModel>()
                 ProfileView(viewModel, navController)
             }
+            /*
             composable(Routes.ProfileName.route) {
                 val viewModel = hiltViewModel<ProfileViewModel>()
                 ProfileNameView(viewModel, navController)
@@ -85,7 +88,7 @@ fun ShareWiseNavHost(
                 val viewModel = hiltViewModel<ProfileViewModel>()
                 ProfilePhoneView(viewModel, navController)
             }
-
+            */
             navigation(
                 startDestination = Routes.SelectedGroup.route,
                 route = "selectedGroup/{groupUid}"
@@ -95,15 +98,19 @@ fun ShareWiseNavHost(
                     SelectedGroupView(viewModel, navController)
                 }
             }
+
         }
     }
-}
 
-@Composable
-inline fun <reified T : ViewModel> NavBackStackEntry.sharedViewModel(navController: NavController): T {
-    val navGraphRoute = destination.parent?.route ?: return hiltViewModel()
-    val parentEntry = remember(this) {
-        navController.getBackStackEntry(navGraphRoute)
+
+
+
+    @Composable
+    inline fun <reified T : ViewModel> NavBackStackEntry.sharedViewModel(navController: NavController): T {
+        val navGraphRoute = destination.parent?.route ?: return hiltViewModel()
+        val parentEntry = remember(this) {
+            navController.getBackStackEntry(navGraphRoute)
+        }
+        return hiltViewModel(parentEntry)
     }
-    return hiltViewModel(parentEntry)
 }
