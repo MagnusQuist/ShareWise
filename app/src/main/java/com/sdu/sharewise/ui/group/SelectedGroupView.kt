@@ -89,7 +89,6 @@ fun SelectedGroupView (
                     }
                 }
             }
-
             Spacer(modifier = Modifier.height(10.dp))
 
             // Add Expense Button
