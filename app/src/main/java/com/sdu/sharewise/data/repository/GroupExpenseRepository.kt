@@ -35,4 +35,12 @@ interface GroupExpenseRepository {
         amount: Float,
     )
 
+    suspend fun userOwed(
+        expenseCreator: String,
+        amount: Float,
+        groupUid: String
+    )
+
+
+
 }
