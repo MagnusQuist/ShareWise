@@ -279,7 +279,7 @@ fun GroupCard(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(MaterialTheme.colorScheme.onErrorContainer)
+                    .background(MaterialTheme.colorScheme.outline)
                     .padding(18.dp, 12.dp),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
