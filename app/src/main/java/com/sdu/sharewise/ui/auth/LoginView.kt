@@ -176,6 +176,8 @@ fun LoginView(viewModel: AuthViewModel, navController: NavHostController) {
                             }
                         }
                     }
+
+                    else -> {}
                 }
             }
         }

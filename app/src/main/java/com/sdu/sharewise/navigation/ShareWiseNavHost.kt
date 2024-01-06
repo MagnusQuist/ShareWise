@@ -4,13 +4,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.ViewModel
-import androidx.navigation.NavBackStackEntry
-import androidx.navigation.NavController
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -30,9 +26,9 @@ import com.sdu.sharewise.ui.home.HomeView
 import com.sdu.sharewise.ui.home.HomeViewModel
 import com.sdu.sharewise.ui.intro.IntroView
 import com.sdu.sharewise.ui.profile.ProfileView
-import com.sdu.sharewise.ui.profile.ProfileNameView
-import com.sdu.sharewise.ui.profile.ProfileEmailView
-import com.sdu.sharewise.ui.profile.ProfilePhoneView
+//import com.sdu.sharewise.ui.profile.ProfileNameView
+//import com.sdu.sharewise.ui.profile.ProfileEmailView
+//import com.sdu.sharewise.ui.profile.ProfilePhoneView
 import com.sdu.sharewise.ui.profile.ProfileViewModel
 
 @Composable
@@ -72,11 +68,11 @@ fun ShareWiseNavHost(
             route = "auth"
         ) {
             composable(Routes.Login.route) {
-                val viewModel = it.sharedViewModel<AuthViewModel>(navController = navController)
+                val viewModel = hiltViewModel<AuthViewModel>()
                 LoginView(viewModel, navController)
             }
             composable(Routes.Register.route) {
-                val viewModel = it.sharedViewModel<AuthViewModel>(navController = navController)
+                val viewModel = hiltViewModel<AuthViewModel>()
                 RegisterView(viewModel, navController)
             }
         }
@@ -123,6 +119,15 @@ fun ShareWiseNavHost(
             */
             navigation(
                 startDestination = Routes.SelectedGroup.route,
+                route = "GroupExpenses"
+            ) {
+                composable(Routes.GroupExpense.route) {
+                    val viewModel = hiltViewModel<CreateGroupExpenseViewModel>()
+                    CreateGroupExpenseView(viewModel, navController)
+                }
+            }
+            navigation(
+                startDestination = Routes.SelectedGroup.route,
                 route = "selectedGroup/{groupUid}"
             ) {
                 composable(Routes.SelectedGroup.route) {
@@ -130,13 +135,9 @@ fun ShareWiseNavHost(
                     SelectedGroupView(viewModel, navController)
                 }
             }
-
         }
     }
-
-
-
-
+    /*
     @Composable
     inline fun <reified T : ViewModel> NavBackStackEntry.sharedViewModel(navController: NavController): T {
         val navGraphRoute = destination.parent?.route ?: return hiltViewModel()
@@ -145,4 +146,8 @@ fun ShareWiseNavHost(
         }
         return hiltViewModel(parentEntry)
     }
+
+     */
 }
+
+

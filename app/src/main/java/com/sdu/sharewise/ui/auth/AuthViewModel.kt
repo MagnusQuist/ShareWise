@@ -62,4 +62,5 @@ class AuthViewModel @Inject constructor(
         _loginFlow.value = null
         checkAuthenticationState()
     }
+
 }

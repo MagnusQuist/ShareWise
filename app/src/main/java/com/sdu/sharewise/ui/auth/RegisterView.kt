@@ -198,6 +198,8 @@ fun RegisterView(viewModel: AuthViewModel?, navController: NavHostController) {
                             }
                         }
                     }
+
+                    else -> {}
                 }
             }
         }

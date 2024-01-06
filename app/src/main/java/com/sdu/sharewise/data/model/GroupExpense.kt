@@ -6,7 +6,7 @@ data class GroupExpense(
     val amount: Float,
     val expenseCreator: String,
     val expensePayer: String,
-    val paid: Boolean
+    var paid: Boolean
 ) {
     constructor() : this("", "", 0.0f, "", "", false)
 }
