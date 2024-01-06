@@ -20,6 +20,11 @@ val LightColors = lightColorScheme(
     error = md_theme_light_error,
     outline = md_theme_light_outline,
     outlineVariant = md_theme_light_outlineVariant,
+    scrim = md_theme_light_scrim,
+    inverseOnSurface = md_theme_light_inverseOnSurface,
+    inverseSurface = md_theme_light_inverseSurface,
+    surfaceTint = md_theme_light_surfaceTint,
+    onErrorContainer = md_theme_light_onErrorContainer,
 )
 
 val DarkColors = darkColorScheme(
@@ -29,6 +34,11 @@ val Typography = Typography(
     labelMedium = TextStyle(
         fontFamily = fonts,
         fontWeight = FontWeight.Normal,
+        fontSize = 14.sp
+    ),
+    displayMedium = TextStyle(
+        fontFamily = fonts,
+        fontWeight = FontWeight.SemiBold,
         fontSize = 14.sp
     ),
     bodyMedium = TextStyle(
