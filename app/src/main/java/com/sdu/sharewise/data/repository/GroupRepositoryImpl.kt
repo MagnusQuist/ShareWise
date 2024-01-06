@@ -48,19 +48,6 @@ class GroupRepositoryImpl @Inject constructor (
         TODO("Not yet implemented")
     }
 
-    override suspend fun addExpense(
-        expenseUid: String,
-        groupUid: String,
-        uuid: String,
-        expense: Float
-    ) {
-        TODO("Not yet implemented")
-    }
-
-    override suspend fun payExpense() {
-        TODO("Not yet implemented")
-    }
-
     override suspend fun deleteGroup() {
         TODO("Not yet implemented")
     }

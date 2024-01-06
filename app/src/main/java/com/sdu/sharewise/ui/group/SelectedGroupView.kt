@@ -1,6 +1,7 @@
 package com.sdu.sharewise.ui.group
 
 import android.widget.Toast
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -14,6 +15,8 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBackIos
+import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -25,11 +28,14 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.sdu.sharewise.data.model.Group
+import com.sdu.sharewise.navigation.Routes
 import com.sdu.sharewise.ui.components.NavigateToHomeButton
 
 @Composable
@@ -83,7 +89,28 @@ fun SelectedGroupView (
                     }
                 }
             }
+
             Spacer(modifier = Modifier.height(10.dp))
+
+            // Add Expense Button
+            Button(
+                onClick = {
+                    navController.navigate(Routes.CreateExpense.route) {
+                        popUpTo(Routes.SelectedGroup.route)
+                    }
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(58.dp)
+                    .clip(MaterialTheme.shapes.small)
+                    .background(MaterialTheme.colorScheme.primary)
+            ) {
+                Text(
+                    text = "Create Expense",
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = MaterialTheme.colorScheme.onPrimary
+                )
+            }
         }
     }
 

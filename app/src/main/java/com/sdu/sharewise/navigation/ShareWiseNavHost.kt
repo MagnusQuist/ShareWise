@@ -20,6 +20,8 @@ import androidx.navigation.navigation
 import com.sdu.sharewise.ui.auth.AuthViewModel
 import com.sdu.sharewise.ui.auth.LoginView
 import com.sdu.sharewise.ui.auth.RegisterView
+import com.sdu.sharewise.ui.group.CreateExpenseView
+import com.sdu.sharewise.ui.group.CreateExpenseViewModel
 import com.sdu.sharewise.ui.group.CreateGroupView
 import com.sdu.sharewise.ui.group.CreateGroupViewModel
 import com.sdu.sharewise.ui.group.SelectedGroupView
@@ -125,6 +127,11 @@ fun ShareWiseNavHost(
                 composable(Routes.SelectedGroup.route) {
                     val viewModel = hiltViewModel<SelectedGroupViewModel>()
                     SelectedGroupView(viewModel, navController)
+                }
+
+                composable(Routes.CreateExpense.route) {
+                    val viewModel = hiltViewModel<CreateExpenseViewModel>()
+                    CreateExpenseView(viewModel, navController)
                 }
             }
         }
