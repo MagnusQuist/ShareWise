@@ -34,6 +34,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.sdu.sharewise.data.model.Group
 import com.sdu.sharewise.navigation.Routes
+import com.sdu.sharewise.ui.components.NavigateToHomeButton
 
 
 @Composable
@@ -73,24 +74,7 @@ fun SelectedGroupView (
                     modifier = Modifier
                         .fillMaxWidth(),
                 ) {
-                    IconButton(
-                        modifier = Modifier
-                            .size(22.dp),
-                        onClick = {
-                            navController.navigate(Routes.Home.route) {
-                                popUpTo(Routes.Home.route)
-                            }
-                        }
-                    ) {
-                        Icon(
-                            modifier = Modifier
-                                .size(22.dp),
-                            imageVector = Icons.Default.ArrowBackIos,
-                            tint = MaterialTheme.colorScheme.primary,
-                            contentDescription = "Go Back"
-                        )
-                    }
-
+                    NavigateToHomeButton(navController = navController)
                     selectedGroup?.let {
                         Text(
                             modifier = Modifier

@@ -18,7 +18,6 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -31,10 +30,9 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.sdu.sharewise.R
 import com.sdu.sharewise.navigation.Routes
-import com.sdu.sharewise.ui.auth.AuthViewModel
 
 @Composable
-fun IntroView(navController: NavHostController) {
+fun IntroView(navController: NavHostController, function: () -> Unit) {
     // Animate image by changing the Box padding
     val infiniteTransition = rememberInfiniteTransition(label = "")
     val topPadding by infiniteTransition.animateFloat(

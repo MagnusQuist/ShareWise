@@ -4,7 +4,6 @@ import android.content.Context
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.Composable
@@ -26,8 +25,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowBackIos
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material.icons.outlined.Description
@@ -41,7 +38,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
-import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -63,11 +59,11 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.graphics.toColorInt
 import androidx.navigation.NavHostController
 import com.sdu.sharewise.data.Resource
 import com.sdu.sharewise.navigation.Routes
 import com.sdu.sharewise.ui.components.FormFieldText
+import com.sdu.sharewise.ui.components.NavigateToHomeButton
 
 @Composable
 fun CreateGroupView(viewModel: CreateGroupViewModel, navController: NavHostController) {
@@ -100,22 +96,7 @@ fun CreateGroupView(viewModel: CreateGroupViewModel, navController: NavHostContr
                 modifier = Modifier
                     .fillMaxWidth(),
             ) {
-                IconButton(
-                    modifier = Modifier
-                        .size(22.dp),
-                    onClick = {
-                        if (navController.previousBackStackEntry != null) {
-                            navController.navigateUp()
-                        }
-                    }) {
-                    Icon(
-                        modifier = Modifier
-                            .size(22.dp),
-                        imageVector = Icons.Default.ArrowBackIos,
-                        tint = MaterialTheme.colorScheme.primary,
-                        contentDescription = "Go Back"
-                    )
-                }
+                NavigateToHomeButton(navController = navController)
 
                 Text(
                     modifier = Modifier

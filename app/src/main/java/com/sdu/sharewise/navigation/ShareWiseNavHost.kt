@@ -1,12 +1,17 @@
 package com.sdu.sharewise.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.ViewModel
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -34,15 +39,32 @@ import com.sdu.sharewise.ui.profile.ProfileViewModel
 fun ShareWiseNavHost(
     modifier: Modifier = Modifier,
     navController: NavHostController = rememberNavController(),
-    startDestination: String = Routes.Intro.route
 ) {
+    val authViewModel = hiltViewModel<AuthViewModel>()
+    val isAuthenticated by authViewModel.isAuthenticated.collectAsState()
+
+    val isFirstLaunch = rememberSaveable { mutableStateOf(true) }
+    val startDestination = if (isFirstLaunch.value) {
+        Routes.Intro.route
+    } else {
+        Routes.Home.route
+    }
+
     NavHost(
         modifier = modifier,
         navController = navController,
         startDestination = startDestination
     ) {
         composable(Routes.Intro.route) {
-            IntroView(navController)
+            IntroView(navController) {
+                isFirstLaunch.value = false
+                navController.navigate(Routes.Home.route) {
+                    popUpTo(navController.graph.findStartDestination().id) {
+                        saveState = true
+                    }
+                    launchSingleTop = true
+                }
+            }
         }
 
         navigation(
@@ -64,8 +86,18 @@ fun ShareWiseNavHost(
             route = "home"
         ) {
             composable(Routes.Home.route) {
-                val viewModel = hiltViewModel<HomeViewModel>()
-                HomeView(viewModel, navController)
+                if (isAuthenticated) {
+                    val viewModel = hiltViewModel<HomeViewModel>()
+                    HomeView(viewModel, navController)
+                } else {
+                    navController.navigate(Routes.Login.route) {
+                        popUpTo(navController.graph.findStartDestination().id) {
+                            saveState = true
+                        }
+                        launchSingleTop = true
+                    }
+                }
+
             }
             composable(Routes.CreateGroup.route) {
                 val viewModel = hiltViewModel<CreateGroupViewModel>()

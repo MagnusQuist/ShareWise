@@ -20,8 +20,11 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.Payment
 import androidx.compose.material.icons.filled.PersonOutline
 import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -39,10 +42,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter.Companion.tint
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.core.graphics.toColorInt
 import androidx.navigation.NavHostController
 import com.sdu.sharewise.R
@@ -52,8 +59,7 @@ import com.sdu.sharewise.navigation.Routes
 @Composable
 fun HomeView(viewModel: HomeViewModel, navController: NavHostController) {
     // Observe groups from ViewModel
-    val ownGroups by viewModel.ownGroups.observeAsState(emptyList())
-    val othersGroups by viewModel.othersGroups.observeAsState(emptyList())
+    val groups by viewModel.groups.observeAsState(emptyList())
 
     // Observe error message from ViewModel
     val errorMessage by viewModel.errorMessage.observeAsState(null)
@@ -133,24 +139,17 @@ fun HomeView(viewModel: HomeViewModel, navController: NavHostController) {
         LazyColumn(
             modifier = Modifier.fillMaxWidth(),
         ) {
-            if (ownGroups.isEmpty()) {
+            if (groups.isEmpty()) {
                 item {
-                    LoadingGroups(modifier = Modifier,"Loading...")
+                    Text(
+                        text = "No groups yet. Create one and share your expenses!",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.secondary
+                    )
                 }
             } else {
-                itemsIndexed (ownGroups) { index, _ ->
-                    GroupCard(group = ownGroups[index], isOwned = true, navController = navController)
-                    Spacer(modifier = Modifier.height(18.dp))
-                }
-            }
-
-            if (othersGroups.isEmpty()) {
-                item {
-                    LoadingGroups(modifier = Modifier,"Loading...")
-                }
-            } else {
-                itemsIndexed (othersGroups) { index, _ ->
-                    GroupCard(group = othersGroups[index], isOwned = false, navController = navController)
+                itemsIndexed (groups) { index, _ ->
+                    GroupCard(group = groups[index], isOwned = true, navController = navController)
                     Spacer(modifier = Modifier.height(18.dp))
                 }
             }
@@ -225,86 +224,72 @@ fun GroupCard(
             containerColor = MaterialTheme.colorScheme.onSecondary
         )
     ) {
-        Row(modifier = Modifier
-            .height(IntrinsicSize.Min)
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
         ) {
-            Row(modifier = Modifier
-                .background(Color(group.color.toColorInt()))
-                .padding(14.dp)
-                .fillMaxHeight(),
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(18.dp, 8.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Icon(
-                    modifier = Modifier
-                        .size(20.dp),
-                    imageVector = Icons.Default.PersonOutline,
-                    tint = MaterialTheme.colorScheme.onSecondary,
-                    contentDescription = "Amount of group members"
+                    imageVector = ImageVector.vectorResource(id = R.drawable.creditcard),
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.secondary,
+                    modifier = Modifier.size(40.dp)
                 )
                 Text(
-                    text = (group.members.size + 1).toString(),
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSecondary
+                    text = "${group.members.size + 1} Member(s)",
+                    color = MaterialTheme.colorScheme.secondary,
+                    style = MaterialTheme.typography.bodyMedium
                 )
+                if (isOwned) {
+                    Icon(
+                        modifier = Modifier.size(22.dp),
+                        imageVector = ImageVector.vectorResource(id = R.drawable.heart_solid),
+                        contentDescription = null,
+                        tint = Color.hsl(349F, 0.81F, 0.58F)
+                    )
+                } else {
+                    Icon(
+                        modifier = Modifier.size(22.dp),
+                        imageVector = ImageVector.vectorResource(id = R.drawable.heart_regular),
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.secondary
+                    )
+                }
             }
 
-            Column(
+            // Group Name Row
+            Text(
+                text = group.name,
+                style = MaterialTheme.typography.titleSmall,
+                color = MaterialTheme.colorScheme.primary,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier.padding(18.dp, 12.dp)
+            )
+            Spacer(modifier = Modifier.height(6.dp))
+            Row(
                 modifier = Modifier
-                    .weight(1f)
-                    .padding(14.dp)
+                    .fillMaxWidth()
+                    .background(MaterialTheme.colorScheme.outlineVariant)
+                    .padding(18.dp, 12.dp),
+                horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Text(
-                        text = group.name,
-                        style = MaterialTheme.typography.bodyLarge,
-                        color = MaterialTheme.colorScheme.primary
-                    )
-                    if (isOwned) {
-                        Icon(
-                            modifier = Modifier
-                                .size(22.dp),
-                            imageVector = Icons.Default.Star,
-                            tint = MaterialTheme.colorScheme.tertiaryContainer,
-                            contentDescription = "Owned")
-                    }
-                }
-                Row(modifier = Modifier
-                    .padding(top = 10.dp)
-                ) {
-                    Column(modifier = Modifier
-                        .weight(1f)
-                    ) {
-                        Text(
-                            text = "Total Expenses",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.secondary
-                        )
-                        Text(
-                            text = "0.00 kr.",
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = contentColorFor(MaterialTheme.colorScheme.background)
-                        )
-                    }
-                    Column(modifier = Modifier
-                        .weight(1f),
-                        horizontalAlignment = Alignment.End
-                    ) {
-                        Text(
-                            text = "I'm Owed",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.primary
-                        )
-                        Text(
-                            text = "0.00 kr.",
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.outline
-                        )
-                    }
-                }
+                Text(
+                    text = "You're Owed",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.secondary
+                )
+                Text(
+                    text = "$100",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.secondary
+                )
             }
         }
     }
