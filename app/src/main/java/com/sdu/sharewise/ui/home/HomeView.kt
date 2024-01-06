@@ -221,7 +221,7 @@ fun GroupCard(
             .fillMaxWidth(),
         shape = MaterialTheme.shapes.small,
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.onSecondary
+            containerColor = MaterialTheme.colorScheme.scrim
         )
     ) {
         Column(
@@ -231,64 +231,67 @@ fun GroupCard(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(18.dp, 8.dp),
+                    .padding(top = 18.dp, start = 18.dp, bottom = 12.dp, end = 18.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Icon(
-                    imageVector = ImageVector.vectorResource(id = R.drawable.creditcard),
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.secondary,
-                    modifier = Modifier.size(40.dp)
-                )
-                Text(
-                    text = "${group.members.size + 1} Member(s)",
-                    color = MaterialTheme.colorScheme.secondary,
-                    style = MaterialTheme.typography.bodyMedium
-                )
                 if (isOwned) {
                     Icon(
                         modifier = Modifier.size(22.dp),
                         imageVector = ImageVector.vectorResource(id = R.drawable.heart_solid),
                         contentDescription = null,
-                        tint = Color.hsl(349F, 0.81F, 0.58F)
+                        tint = MaterialTheme.colorScheme.error
                     )
                 } else {
                     Icon(
                         modifier = Modifier.size(22.dp),
                         imageVector = ImageVector.vectorResource(id = R.drawable.heart_regular),
                         contentDescription = null,
-                        tint = MaterialTheme.colorScheme.secondary
+                        tint = MaterialTheme.colorScheme.surfaceTint
                     )
                 }
+                Text(
+                    text = "${group.members.size + 1} member(s)",
+                    color = MaterialTheme.colorScheme.surfaceTint,
+                    style = MaterialTheme.typography.bodyMedium
+                )
             }
 
             // Group Name Row
             Text(
                 text = group.name,
                 style = MaterialTheme.typography.titleSmall,
-                color = MaterialTheme.colorScheme.primary,
+                color = MaterialTheme.colorScheme.inverseOnSurface,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
-                modifier = Modifier.padding(18.dp, 12.dp)
+                modifier = Modifier.padding(18.dp, 2.dp)
             )
-            Spacer(modifier = Modifier.height(6.dp))
+            // Group Total Expense
+            Text(
+                text = "Total expenses: 7645 DKK",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.surfaceTint,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier.padding(18.dp, 0.dp)
+            )
+            Spacer(modifier = Modifier.height(12.dp))
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(MaterialTheme.colorScheme.outlineVariant)
+                    .background(MaterialTheme.colorScheme.outline)
                     .padding(18.dp, 12.dp),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
                     text = "You're Owed",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.secondary
+                    style = MaterialTheme.typography.displayMedium,
+                    color = MaterialTheme.colorScheme.surfaceTint
                 )
                 Text(
-                    text = "$100",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.secondary
+                    text = "750 DKK",
+                    style = MaterialTheme.typography.displayMedium,
+                    color = MaterialTheme.colorScheme.surfaceTint
                 )
             }
         }

@@ -8,6 +8,13 @@ val md_theme_light_onPrimaryContainer = Color(0xFF00C89A) //groups side colour
 val md_theme_light_secondary = Color(0xFF707988)
 val md_theme_light_onSecondary = Color(0xFFF8F8F8) // Slightly less white
 val md_theme_light_tertiaryContainer = Color(0xFFFFDDAF) //Profile image colour
-val md_theme_light_error = Color(0xFFBA1A1A) //sign out colour
-val md_theme_light_outline = Color(0xFF79C07C) // colour for owed money
+val md_theme_light_error = Color(0xFFEB505D) // sign out colour
+val md_theme_light_outline = Color(0xFFD0EADD) // colour for owed money
 val md_theme_light_outlineVariant = Color(0xFFDBDBDB) // Light Grey
+
+// Use these for Card Design
+val md_theme_light_scrim = Color(0xFFF1F2F5) // Card Background
+val md_theme_light_inverseOnSurface = Color(0xFF273347) // Card Title Color
+val md_theme_light_inverseSurface = Color(0xffE3E6EC) // Card accent background color
+val md_theme_light_surfaceTint = Color(0xFF545F71) // Secondary text color
+val md_theme_light_onErrorContainer = Color(0xFFEAD0D7) // You owe background color

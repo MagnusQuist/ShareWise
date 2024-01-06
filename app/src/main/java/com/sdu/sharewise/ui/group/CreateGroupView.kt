@@ -102,7 +102,7 @@ fun CreateGroupView(viewModel: CreateGroupViewModel, navController: NavHostContr
                     modifier = Modifier
                         .fillMaxWidth(),
                     textAlign = TextAlign.Center,
-                    text = "Profile",
+                    text = "Create Group",
                     style = MaterialTheme.typography.titleSmall,
                     color = MaterialTheme.colorScheme.primary
                 )
