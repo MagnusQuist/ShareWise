@@ -139,7 +139,7 @@ fun SelectedGroupView (
                                 .align(Alignment.TopEnd),
                             onClick = {
                                 navController.navigate(
-                                    "settingsGroup/"+selectedGroup?.groupUid, // Use the route with the parameter
+                                    "selectedGroup/"+selectedGroup?.groupUid+"/settings", // Use the route with the parameter
                                     builder = {
                                         launchSingleTop = true
 

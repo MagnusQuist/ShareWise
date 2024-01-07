@@ -1,5 +1,6 @@
 package com.sdu.sharewise.data.repository
 
+import android.util.Log
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.perf.FirebasePerformance
 import com.sdu.sharewise.data.Resource
@@ -66,7 +67,11 @@ class GroupRepositoryImpl @Inject constructor (
         TODO("Not yet implemented")
     }
 
-    override fun deleteGroup(groupUid: String) {
-        TODO("Not yet implemented")
+    override suspend fun deleteGroup(groupUid: String) {
+        try {
+            firebaseDB.reference.child("Groups").child(groupUid).removeValue().await()
+        } catch (e: Exception) {
+            Log.d("Group Repository", e.toString())
+        }
     }
 }

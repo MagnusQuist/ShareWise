@@ -138,11 +138,15 @@ fun ShareWiseNavHost(
                     val viewModel = hiltViewModel<CreateExpenseViewModel>()
                     CreateExpenseView(viewModel, navController, group)
                 }
+            }
 
+            navigation(
+                startDestination = Routes.SettingsGroup.route,
+                route = "selectedGroup/{groupUid}/settings"
+            ) {
                 composable(Routes.SettingsGroup.route) {
-                    val group: Group? = navController.previousBackStackEntry?.savedStateHandle?.get("group")
                     val viewModel = hiltViewModel<SettingsGroupViewModel>()
-                    SettingsGroupView(viewModel, navController, group)
+                    SettingsGroupView(viewModel, navController)
                 }
             }
         }
