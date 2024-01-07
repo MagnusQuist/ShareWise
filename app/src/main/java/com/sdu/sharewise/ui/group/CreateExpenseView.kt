@@ -122,7 +122,7 @@ fun CreateExpenseView(
                 )
             },
             imeAction = ImeAction.Next,
-            keyboardType = KeyboardType.Decimal,
+            keyboardType = KeyboardType.Text,
             keyBoardActions = KeyboardActions(
                 onNext = {
                     focusManager.moveFocus(FocusDirection.Down)
@@ -169,29 +169,48 @@ fun CreateExpenseView(
             verticalArrangement = Arrangement.Center
         ) {
             group?.members?.forEach { member ->
-                Row (
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(56.dp)
-                        .toggleable(
-                            value = checkboxStates.getValue(member.toString()),
-                            onValueChange = { checkboxStates[member.toString()] = it }
-                        )
-                        .padding(vertical = 16.dp, horizontal = 16.dp)
-                ) {
-                    Checkbox(
-                        checked = checkboxStates.getValue(member.toString()),
-                        onCheckedChange = null
-                    )
-                    Text(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(start = 16.dp),
-                        textAlign = TextAlign.Left,
-                        text = member.toString(),
-                        style = MaterialTheme.typography.bodyLarge,
-                        color = MaterialTheme.colorScheme.primary
-                    )
+                if (member != null) {
+                    var email by remember { mutableStateOf<String?>(null) }
+
+                    // Get email from uuid
+                    LaunchedEffect(member) {
+                        viewModel.findEmailByUuid(member) { tag, message ->
+                            if (tag == "success") {
+                                if (message != null) {
+                                    email = message
+                                }
+                            } else {
+                                email = "Email not found.."
+                            }
+                        }
+                    }
+
+                    if (email != null) {
+                        Row (
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(56.dp)
+                                .toggleable(
+                                    value = checkboxStates.getValue(member.toString()),
+                                    onValueChange = { checkboxStates[member.toString()] = it }
+                                )
+                                .padding(vertical = 16.dp, horizontal = 16.dp)
+                        ) {
+                            Checkbox(
+                                checked = checkboxStates.getValue(member.toString()),
+                                onCheckedChange = null
+                            )
+                            Text(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(start = 16.dp),
+                                textAlign = TextAlign.Left,
+                                text = email!!,
+                                style = MaterialTheme.typography.bodyLarge,
+                                color = MaterialTheme.colorScheme.primary
+                            )
+                        }
+                    }
                 }
             }
         }

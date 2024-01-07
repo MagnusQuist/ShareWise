@@ -212,22 +212,24 @@ fun CreateGroupView(viewModel: CreateGroupViewModel, navController: NavHostContr
             ) {
                 itemsIndexed (members) { index, member ->
                     if (member != null) {
-                        // Get email from uuid
-                        var email = ""
+                        var email by remember { mutableStateOf<String?>(null) }
 
-                        viewModel.findEmailByUuid(member) { tag, message ->
-                            if (tag == "success") {
-                                if (message != null) {
-                                    email = message
+                        // Get email from uuid
+                        LaunchedEffect(member) {
+                            viewModel.findEmailByUuid(member) { tag, message ->
+                                if (tag == "success") {
+                                    if (message != null) {
+                                        email = message
+                                    }
+                                } else {
+                                    email = "Email not found.."
                                 }
-                            } else {
-                                Toast.makeText(context, tag, Toast.LENGTH_SHORT).show()
                             }
                         }
 
-                        Log.d("EMAIL", email)
-
-                        MemberItem(email = email, index = index, membersList = members)
+                        if (email != null) {
+                            MemberItem(email = email!!, index = index, membersList = members)
+                        }
                     }
                 }
             }

@@ -14,6 +14,7 @@ import com.sdu.sharewise.data.model.Expense
 import com.sdu.sharewise.data.model.Group
 import com.sdu.sharewise.data.repository.AuthRepository
 import com.sdu.sharewise.data.repository.GroupRepository
+import com.sdu.sharewise.data.repository.UserRepository
 import com.sdu.sharewise.data.utils.await
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -24,6 +25,7 @@ import javax.inject.Inject
 @HiltViewModel
 class SelectedGroupViewModel @Inject constructor(
     private val authRepository: AuthRepository,
+    private val userRepository: UserRepository,
     private val firebaseDB: FirebaseDatabase
 ) : ViewModel() {
     private val _selectedGroup = MutableLiveData<Group?>()
@@ -79,6 +81,18 @@ class SelectedGroupViewModel @Inject constructor(
                 _errorMessage.postValue("Failed to get groups.")
             }
         }
+    }
+
+    fun findEmailByUuid(uuid: String, callback: (String?, String?) -> Unit) = viewModelScope.launch {
+        userRepository.getEmailByUuid(uuid) { email ->
+            if (email != null) {
+                callback("success", email)
+            } else {
+                callback("Email not found", null)
+            }
+        }
+
+        return@launch
     }
 
     val getCurrentUser: FirebaseUser?

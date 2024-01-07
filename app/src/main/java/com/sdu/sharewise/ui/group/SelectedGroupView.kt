@@ -153,39 +153,6 @@ fun SelectedGroupView (
 
             Spacer(modifier = Modifier.height(18.dp))
 
-            LazyColumn(
-                modifier = Modifier.fillMaxWidth(),
-            ) {
-                if (expenses.isEmpty()) {
-                    item {
-                        Text(
-                            text = "No Expenses yet...",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.secondary,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(16.dp)
-                        )
-                    }
-                } else {
-                    itemsIndexed (expenses) { index, _ ->
-                        viewModel.getCurrentUser?.uid?.let {
-                            ExpenseCard(modifier = Modifier, expenses[index],
-                                it, context
-                            )
-                        }
-
-                        Spacer(modifier = Modifier.height(18.dp))
-                    }
-                }
-
-                errorMessage?.let { message ->
-                    Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
-                }
-            }
-
-            Spacer(modifier = Modifier.height(18.dp))
-
             Button(
                 onClick = {
                     navController.currentBackStackEntry?.savedStateHandle?.set("group", selectedGroup)
@@ -203,6 +170,66 @@ fun SelectedGroupView (
                     color = MaterialTheme.colorScheme.onPrimary
                 )
             }
+
+            Spacer(modifier = Modifier.height(18.dp))
+
+            Text(
+                text = "Expenses",
+                color = MaterialTheme.colorScheme.surfaceTint,
+                style = MaterialTheme.typography.bodyMedium
+            )
+
+            Spacer(modifier = Modifier.height(18.dp))
+
+            LazyColumn(
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                if (expenses.isEmpty()) {
+                    item {
+                        Text(
+                            text = "No Expenses yet...",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.secondary,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp)
+                        )
+                    }
+                } else {
+                    itemsIndexed (expenses) { index, _ ->
+                        var email by remember { mutableStateOf<String?>(null) }
+
+                        // Get email from uuid
+                        LaunchedEffect(expenses[index].expenseCreator) {
+                            viewModel.findEmailByUuid(expenses[index].expenseCreator) { tag, message ->
+                                if (tag == "success") {
+                                    if (message != null) {
+                                        email = message
+                                    }
+                                } else {
+                                    email = "Email not found.."
+                                }
+                            }
+                        }
+
+                        if (email != null) {
+                            viewModel.getCurrentUser?.uid?.let {
+                                ExpenseCard(modifier = Modifier, expense = expenses[index],
+                                    currectUserUid =  it, context = context, expenseCreaterEmail = email!!
+                                )
+                            }
+                        }
+
+                        Spacer(modifier = Modifier.height(18.dp))
+                    }
+                }
+
+                errorMessage?.let { message ->
+                    Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+                }
+            }
+
+            Spacer(modifier = Modifier.height(18.dp))
         }
     }
 
@@ -216,6 +243,7 @@ fun ExpenseCard(
     modifier: Modifier = Modifier,
     expense: Expense,
     currectUserUid: String,
+    expenseCreaterEmail: String,
     context: Context
 ) {
     val background = if (expense.expensePayer == currectUserUid) MaterialTheme.colorScheme.onErrorContainer else MaterialTheme.colorScheme.outline
@@ -239,7 +267,7 @@ fun ExpenseCard(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = expense.expenseCreator,
+                    text = expenseCreaterEmail,
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.surfaceTint,
                     maxLines = 1,
@@ -324,7 +352,7 @@ fun ExpenseCard(
                     )
                 }
 
-                if (expense.expensePayer != currectUserUid) {
+                if (expense.expensePayer != currectUserUid || expense.expenseCreator == currectUserUid) {
                     Text(
                         text = "${expense.amount} DKK",
                         style = MaterialTheme.typography.displayMedium,
