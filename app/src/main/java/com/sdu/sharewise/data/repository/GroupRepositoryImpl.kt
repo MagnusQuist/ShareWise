@@ -48,28 +48,11 @@ class GroupRepositoryImpl @Inject constructor (
         }
     }
 
-    private fun getUuidByEmail(members: MutableList<String?>): MutableList<String?> {
-        TODO("Check if user exist and get uuid")
-    }
-
     override suspend fun addUser(groupUid: String, uuid: String): Resource<Group> {
         TODO("Not yet implemented")
     }
 
     override suspend fun removeUser(groupUid: String, uuid: String): Resource<Group> {
-        TODO("Not yet implemented")
-    }
-
-    override suspend fun addExpense(
-        expenseUid: String,
-        groupUid: String,
-        uuid: String,
-        expense: Float
-    ) {
-        TODO("Not yet implemented")
-    }
-
-    override suspend fun payExpense() {
         TODO("Not yet implemented")
     }
 

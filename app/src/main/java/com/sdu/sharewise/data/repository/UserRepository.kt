@@ -16,7 +16,9 @@ interface UserRepository {
         authRepository: AuthRepository
     ): Resource<String>
     suspend fun updateUserPhone(uuid: String, phone: String): Resource<String>
+
     suspend fun deleteUser()
+    suspend fun getUuidByEmail(email: String, callback: (String?) -> Unit)
     suspend fun setNotificationtoken(uuid: String, token: String)
     suspend fun getTokenFromUuid(uuid: String, callback: (String?) -> Unit)
 }

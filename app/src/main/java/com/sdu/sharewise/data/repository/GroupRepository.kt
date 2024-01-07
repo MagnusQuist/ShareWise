@@ -22,12 +22,5 @@ interface GroupRepository {
         groupUid: String,
         uuid: String,
     ): Resource<Group>
-    suspend fun addExpense(
-        expenseUid: String,
-        groupUid: String,
-        uuid: String,
-        expense: Float,
-    )
-    suspend fun payExpense()
     suspend fun deleteGroup()
 }

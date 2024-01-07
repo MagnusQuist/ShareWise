@@ -34,7 +34,7 @@ class HomeViewModel @Inject constructor(
                 val groupsList = snapshot.children
                     .mapNotNull { it.getValue(Group::class.java) }
                     .filter { group ->
-                        group.ownerUid == getCurrentUser?.uid || group.members.contains(getCurrentUser?.email)
+                        group.ownerUid == getCurrentUser?.uid || group.members.contains(getCurrentUser?.uid)
                     }
 
                 _groups.postValue(groupsList)

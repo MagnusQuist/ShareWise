@@ -11,10 +11,12 @@ interface GroupExpenseRepository {
     suspend fun createGroupExpense(
         expenseUid: String,
         groupUid: String,
+        expenseDesc: String,
         amount: Float,
         expenseCreator: String,
         expensePayer: String,
         paid: Boolean,
+        time: Long,
     ): Resource<Expense>
 
     suspend fun removeExpense(

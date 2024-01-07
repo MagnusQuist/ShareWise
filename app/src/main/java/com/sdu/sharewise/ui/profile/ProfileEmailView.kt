@@ -40,10 +40,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
-import com.sdu.sharewise.navigation.Routes
 import com.sdu.sharewise.ui.components.FormFieldPassword
 import com.sdu.sharewise.ui.components.FormFieldText
-import com.sdu.sharewise.ui.components.SettingsGroup
 
 @Composable
 fun ProfileEmailView(

@@ -4,6 +4,8 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 import com.sdu.sharewise.data.repository.AuthRepository
 import com.sdu.sharewise.data.repository.AuthRepositoryImpl
+import com.sdu.sharewise.data.repository.GroupExpenseRepository
+import com.sdu.sharewise.data.repository.GroupExpenseRepositoryImpl
 import com.sdu.sharewise.data.repository.GroupRepository
 import com.sdu.sharewise.data.repository.GroupRepositoryImpl
 import com.sdu.sharewise.data.repository.UserRepository
@@ -30,4 +32,7 @@ class AppModule {
 
     @Provides
     fun provideGroupRepository(impl: GroupRepositoryImpl): GroupRepository = impl
+
+    @Provides
+    fun provideExpenseRepository(impl: GroupExpenseRepositoryImpl): GroupExpenseRepository = impl
 }
