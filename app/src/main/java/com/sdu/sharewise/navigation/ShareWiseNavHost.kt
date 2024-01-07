@@ -17,6 +17,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navigation
+import com.sdu.sharewise.data.model.Group
 import com.sdu.sharewise.ui.auth.AuthViewModel
 import com.sdu.sharewise.ui.auth.LoginView
 import com.sdu.sharewise.ui.auth.RegisterView
@@ -130,8 +131,10 @@ fun ShareWiseNavHost(
                 }
 
                 composable(Routes.CreateExpense.route) {
+                    val group: Group? = navController.previousBackStackEntry?.savedStateHandle?.get("group")
+
                     val viewModel = hiltViewModel<CreateExpenseViewModel>()
-                    CreateExpenseView(viewModel, navController)
+                    CreateExpenseView(viewModel, navController, group)
                 }
             }
         }

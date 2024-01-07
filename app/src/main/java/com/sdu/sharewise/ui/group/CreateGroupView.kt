@@ -198,7 +198,8 @@ fun CreateGroupView(viewModel: CreateGroupViewModel, navController: NavHostContr
                     focusManager.moveFocus(FocusDirection.Down)
                 }
             ),
-            context = context
+            context = context,
+            viewModel = viewModel
         )
 
         Spacer(modifier = Modifier.height(18.dp))
@@ -316,7 +317,8 @@ fun FormFieldTextAddMember(
     keyBoardActions: KeyboardActions = KeyboardActions(),
     isEnabled: Boolean = true,
     membersList: SnapshotStateList<String?>,
-    context: Context
+    context: Context,
+    viewModel: CreateGroupViewModel
 ) {
     OutlinedTextField(
         modifier = modifier
@@ -345,7 +347,13 @@ fun FormFieldTextAddMember(
             IconButton(
                 onClick = {
                     if (text.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\$".toRegex())) {
-                        membersList.add(text)
+                        viewModel.findUserByEmail(text) { tag, message ->
+                            if (tag == "success") {
+                                membersList.add(message)
+                            } else {
+                                Toast.makeText(context, tag, Toast.LENGTH_SHORT).show()
+                            }
+                        }
                         onChange("")
                     } else {
                         Toast.makeText(context, "Input valid email", Toast.LENGTH_SHORT).show()

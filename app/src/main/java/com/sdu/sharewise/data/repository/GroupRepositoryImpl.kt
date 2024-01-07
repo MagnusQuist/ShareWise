@@ -36,10 +36,6 @@ class GroupRepositoryImpl @Inject constructor (
         }
     }
 
-    private fun getUuidByEmail(members: MutableList<String?>): MutableList<String?> {
-        TODO("Check if user exist and get uuid")
-    }
-
     override suspend fun addUser(groupUid: String, uuid: String): Resource<Group> {
         TODO("Not yet implemented")
     }

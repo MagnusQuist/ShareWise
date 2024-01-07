@@ -258,14 +258,16 @@ fun GroupCard(
             }
 
             // Group Name Row
-            Text(
-                text = group.name,
-                style = MaterialTheme.typography.titleSmall,
-                color = MaterialTheme.colorScheme.inverseOnSurface,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                modifier = Modifier.padding(18.dp, 2.dp)
-            )
+            group.name?.let {
+                Text(
+                    text = it,
+                    style = MaterialTheme.typography.titleSmall,
+                    color = MaterialTheme.colorScheme.inverseOnSurface,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.padding(18.dp, 2.dp)
+                )
+            }
             // Group Total Expense
             Text(
                 text = "Total expenses: 7645 DKK",

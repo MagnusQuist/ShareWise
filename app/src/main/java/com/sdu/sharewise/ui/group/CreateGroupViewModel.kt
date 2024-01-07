@@ -6,8 +6,10 @@ import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseUser
 import com.sdu.sharewise.data.Resource
 import com.sdu.sharewise.data.model.Group
+import com.sdu.sharewise.data.model.User
 import com.sdu.sharewise.data.repository.AuthRepository
 import com.sdu.sharewise.data.repository.GroupRepository
+import com.sdu.sharewise.data.repository.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -18,7 +20,8 @@ import javax.inject.Inject
 @HiltViewModel
 class CreateGroupViewModel @Inject constructor(
     private val authRepository: AuthRepository,
-    private val groupRepository: GroupRepository
+    private val groupRepository: GroupRepository,
+    private val userRepository: UserRepository
 ) : ViewModel() {
     private val _createGroupFlow = MutableStateFlow<Resource<Group>?>(null)
     val createGroupFlow: StateFlow<Resource<Group>?> = _createGroupFlow
@@ -37,6 +40,18 @@ class CreateGroupViewModel @Inject constructor(
 
     fun setGroupMembers(members: SnapshotStateList<String>) {
         _groupMembers.value = members
+    }
+
+    fun findUserByEmail(email: String, callback: (String?, String?) -> Unit) = viewModelScope.launch {
+        userRepository.getUuidByEmail(email) { user ->
+            if (user != null) {
+                callback("success", user)
+            } else {
+                callback("User not found", null)
+            }
+        }
+
+        return@launch
     }
 
     fun createGroup(name: String, desc: String, members: SnapshotStateList<String?>) = viewModelScope.launch {

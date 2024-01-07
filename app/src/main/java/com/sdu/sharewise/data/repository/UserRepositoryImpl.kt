@@ -10,7 +10,11 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.UserProfileChangeRequest
 import com.google.firebase.auth.userProfileChangeRequest
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.Query
+import com.google.firebase.database.ValueEventListener
 import com.google.firebase.perf.FirebasePerformance
 import com.sdu.sharewise.data.Resource
 import com.sdu.sharewise.data.model.User
@@ -108,6 +112,38 @@ class UserRepositoryImpl @Inject constructor(
             e.printStackTrace()
             Resource.Failure(e)
         }
+    }
+
+    override suspend fun getUuidByEmail(
+        email: String,
+        callback: (String?) -> Unit
+    ) {
+        val query = firebaseDB.getReference("Users").orderByChild("email").equalTo(email)
+
+        query.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                // Check if there is any matching user
+                if (dataSnapshot.exists()) {
+                    // Iterate through the matching users (although there should be only one)
+                    for (userSnapshot in dataSnapshot.children) {
+                        // Get the UUID from the user data
+                        val uuid = userSnapshot.child("uuid").getValue(String::class.java)
+                        callback(uuid)
+                        return
+                    }
+                }
+
+                // If no matching user found, return null
+                callback(null)
+            }
+
+            override fun onCancelled(databaseError: DatabaseError) {
+                // Handle the error if needed
+                // For simplicity, we're just printing the error message here
+                println("Firebase Database Error: ${databaseError.message}")
+                callback(null)
+            }
+        })
     }
 
     override suspend fun deleteUser() {

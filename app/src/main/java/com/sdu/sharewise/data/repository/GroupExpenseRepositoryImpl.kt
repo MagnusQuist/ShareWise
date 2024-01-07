@@ -22,16 +22,18 @@ class GroupExpenseRepositoryImpl @Inject constructor(
     override suspend fun createGroupExpense(
         expenseUid: String,
         groupUid: String,
+        expenseDesc: String,
         amount: Float,
         expenseCreator: String,
         expensePayer: String,
-        paid: Boolean
+        paid: Boolean,
+        time: Long
     ): Resource<Expense> {
         val trace = FirebasePerformance.getInstance().newTrace("createGroupExpense_trace")
         trace.start()
 
         return try {
-            val expense = Expense(expenseUid = expenseUid, groupUid = groupUid, amount = amount, expenseCreator = expenseCreator, expensePayer = expensePayer, paid =paid)
+            val expense = Expense(groupUid = groupUid, amount = amount, expenseDesc = expenseDesc, expenseCreator = expenseCreator, expensePayer = expensePayer, paid = paid, time = time)
             firebaseDB.getReference("GroupExpenses").child(expenseUid).setValue(expense).await()
             trace.stop()
             Resource.Success(expense)
