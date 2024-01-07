@@ -19,6 +19,7 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.ArrowBackIos
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -41,6 +42,7 @@ import androidx.navigation.NavHostController
 import com.sdu.sharewise.R
 import com.sdu.sharewise.navigation.Routes
 import com.sdu.sharewise.ui.components.NavigateToHomeButton
+import com.sdu.sharewise.ui.components.navigateToHome
 import com.sdu.sharewise.ui.home.GroupCard
 
 @Composable
@@ -79,7 +81,26 @@ fun TransactionView(
                     modifier = Modifier
                         .fillMaxWidth(),
                 ) {
-                    NavigateToHomeButton(navController = navController)
+                    IconButton(
+                        modifier = Modifier
+                            .size(22.dp),
+                        onClick = {
+                            navController.navigate(Routes.Profile.route) {
+                                popUpTo(Routes.Home.route) {
+                                    saveState = true
+                                }
+                                // Avoid multiple copies of the home destination when navigating up
+                                launchSingleTop = true
+                            }
+                        }) {
+                        Icon(
+                            modifier = Modifier
+                                .size(22.dp),
+                            imageVector = Icons.Default.ArrowBackIos,
+                            tint = MaterialTheme.colorScheme.primary,
+                            contentDescription = "Go Back"
+                        )
+                    }
 
                     Text(
                         modifier = Modifier
