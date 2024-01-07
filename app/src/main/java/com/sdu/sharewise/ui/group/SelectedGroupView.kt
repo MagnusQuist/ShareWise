@@ -1,13 +1,11 @@
 package com.sdu.sharewise.ui.group
 
-import android.content.Context
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -19,27 +17,24 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBackIos
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.AttachMoney
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material.icons.outlined.AttachMoney
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -49,27 +44,17 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.vectorResource
-import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import com.sdu.sharewise.R
 import com.sdu.sharewise.data.Resource
 import com.sdu.sharewise.data.model.Expense
 import com.sdu.sharewise.data.model.Group
 import com.sdu.sharewise.navigation.Routes
-import com.sdu.sharewise.ui.components.FormFieldText
 import com.sdu.sharewise.ui.components.NavigateToHomeButton
-import com.sdu.sharewise.ui.components.navigateToHome
-import com.sdu.sharewise.ui.home.GroupCard
 
 @Composable
 fun SelectedGroupView (
@@ -100,8 +85,9 @@ fun SelectedGroupView (
     val context = LocalContext.current.applicationContext
 
     Surface(
-        color = MaterialTheme.colorScheme.onSecondary,
-        modifier = Modifier.fillMaxSize()
+        color = MaterialTheme.colorScheme.onPrimary,
+        modifier = Modifier
+            .fillMaxSize()
     ) {
         Column(
             modifier = Modifier
@@ -173,14 +159,6 @@ fun SelectedGroupView (
 
             Spacer(modifier = Modifier.height(10.dp))
 
-            Text(
-                text = if (selectedGroup?.members?.size == 0) "${selectedGroup?.members?.size?.plus(1)} member(s)" else "${selectedGroup?.members?.size} member(s)",
-                color = MaterialTheme.colorScheme.surfaceTint,
-                style = MaterialTheme.typography.bodyMedium
-            )
-
-            Spacer(modifier = Modifier.height(18.dp))
-
             Button(
                 onClick = {
                     navController.currentBackStackEntry?.savedStateHandle?.set("group", selectedGroup)
@@ -188,26 +166,18 @@ fun SelectedGroupView (
                 },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(58.dp)
+                    .height(50.dp)
                     .clip(MaterialTheme.shapes.small)
-                    .background(MaterialTheme.colorScheme.primary)
+                    .background(MaterialTheme.colorScheme.inverseOnSurface)
             ) {
                 Text(
-                    text = "Create Expense",
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = MaterialTheme.colorScheme.onPrimary
+                    text = "Add Expense",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.scrim
                 )
             }
 
-            Spacer(modifier = Modifier.height(18.dp))
-
-            Text(
-                text = "Expenses",
-                color = MaterialTheme.colorScheme.surfaceTint,
-                style = MaterialTheme.typography.bodyMedium
-            )
-
-            Spacer(modifier = Modifier.height(18.dp))
+            Spacer(modifier = Modifier.height(10.dp))
 
             LazyColumn(
                 modifier = Modifier.fillMaxWidth(),
@@ -218,7 +188,7 @@ fun SelectedGroupView (
                             text = "No expenses yet \uD83D\uDE40",
                             textAlign = TextAlign.Center,
                             style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.secondary,
+                            color = MaterialTheme.colorScheme.surfaceTint,
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(top = 20.dp)
@@ -263,7 +233,7 @@ fun SelectedGroupView (
                             text = "All expenses are paid \uD83D\uDC4F",
                             textAlign = TextAlign.Center,
                             style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.secondary,
+                            color = MaterialTheme.colorScheme.surfaceTint,
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(top = 20.dp)
@@ -386,7 +356,7 @@ fun ExpenseCard(
             ) {
                 if (expense.expenseCreator == currectUserUid) {
                     Text(
-                        text = "You made this",
+                        text = "You'll receive",
                         style = MaterialTheme.typography.displayMedium,
                         color = MaterialTheme.colorScheme.surfaceTint
                     )
@@ -398,7 +368,7 @@ fun ExpenseCard(
                     ) {
                         Column {
                             Text(
-                                text = "You Owe",
+                                text = "You owe",
                                 style = MaterialTheme.typography.displayMedium,
                                 color = MaterialTheme.colorScheme.surfaceTint
                             )

@@ -149,7 +149,7 @@ fun HomeView(viewModel: HomeViewModel, navController: NavHostController) {
                 }
             } else {
                 itemsIndexed (groups) { index, _ ->
-                    GroupCard(group = groups[index], isOwned = true, navController = navController)
+                    GroupCard(group = groups[index], isOwned = groups[index].ownerUid == viewModel.getCurrentUser?.uid, navController = navController)
                     Spacer(modifier = Modifier.height(18.dp))
                 }
             }
