@@ -212,50 +212,50 @@ fun CreateExpenseView(
                         }
                     }
                 }
+            }
 
-                if (group.ownerUid != viewModel.getCurrentUser?.uid) {
-                    var email by remember { mutableStateOf<String?>(null) }
+            if (group?.ownerUid != viewModel.getCurrentUser?.uid) {
+                var email by remember { mutableStateOf<String?>(null) }
 
-                    // Get email from uuid
-                    LaunchedEffect(member) {
-                        group.ownerUid?.let {
-                            viewModel.findEmailByUuid(it) { tag, message ->
-                                if (tag == "success") {
-                                    if (message != null) {
-                                        email = message
-                                    }
-                                } else {
-                                    email = "Email not found.."
+                // Get email from uuid
+                LaunchedEffect(group?.ownerUid) {
+                    group?.ownerUid?.let {
+                        viewModel.findEmailByUuid(it) { tag, message ->
+                            if (tag == "success") {
+                                if (message != null) {
+                                    email = message
                                 }
+                            } else {
+                                email = "Email not found.."
                             }
                         }
                     }
+                }
 
-                    if (email != null) {
-                        Row (
+                if (email != null) {
+                    Row (
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(56.dp)
+                            .toggleable(
+                                value = checkboxStates.getValue(group?.ownerUid.toString()),
+                                onValueChange = { checkboxStates[group?.ownerUid.toString()] = it }
+                            )
+                            .padding(vertical = 16.dp, horizontal = 16.dp)
+                    ) {
+                        Checkbox(
+                            checked = checkboxStates.getValue(group?.ownerUid.toString()),
+                            onCheckedChange = null
+                        )
+                        Text(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .height(56.dp)
-                                .toggleable(
-                                    value = checkboxStates.getValue(member.toString()),
-                                    onValueChange = { checkboxStates[member.toString()] = it }
-                                )
-                                .padding(vertical = 16.dp, horizontal = 16.dp)
-                        ) {
-                            Checkbox(
-                                checked = checkboxStates.getValue(member.toString()),
-                                onCheckedChange = null
-                            )
-                            Text(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(start = 16.dp),
-                                textAlign = TextAlign.Left,
-                                text = email!!,
-                                style = MaterialTheme.typography.bodyLarge,
-                                color = MaterialTheme.colorScheme.primary
-                            )
-                        }
+                                .padding(start = 16.dp),
+                            textAlign = TextAlign.Left,
+                            text = email!!,
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = MaterialTheme.colorScheme.primary
+                        )
                     }
                 }
             }
