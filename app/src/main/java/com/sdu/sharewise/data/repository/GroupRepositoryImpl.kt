@@ -66,7 +66,7 @@ class GroupRepositoryImpl @Inject constructor (
         TODO("Not yet implemented")
     }
 
-    override suspend fun deleteGroup() {
+    override fun deleteGroup(groupUid: String) {
         TODO("Not yet implemented")
     }
 }
