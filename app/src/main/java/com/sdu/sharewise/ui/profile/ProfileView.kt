@@ -145,7 +145,7 @@ fun ProfileView(
                     color = MaterialTheme.colorScheme.primary
                 ) {
                     // Navigate to another page
-                    Toast.makeText(context, "Not implemented yet", Toast.LENGTH_SHORT).show()
+                    navController.navigate(Routes.Transactions.route)
                 }
             }
 

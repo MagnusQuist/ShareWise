@@ -11,6 +11,8 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.sdu.sharewise.data.Resource
+import com.sdu.sharewise.data.model.Expense
+import com.sdu.sharewise.data.model.Group
 import com.sdu.sharewise.data.model.User
 import com.sdu.sharewise.data.repository.AuthRepository
 import com.sdu.sharewise.data.repository.UserRepository
@@ -45,6 +47,9 @@ class ProfileViewModel @Inject constructor(
 
     private val _intPreference: MutableStateFlow<Int> = MutableStateFlow(0)
     val intPreference = _intPreference.asStateFlow()
+
+    private val _transactions = MutableLiveData<List<Expense>>()
+    val transactions: LiveData<List<Expense>> get() = _transactions
 
     fun toggleSwitch() {
         _isSwitchOn.value = _isSwitchOn.value.not()
