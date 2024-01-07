@@ -3,6 +3,9 @@ package com.sdu.sharewise.data.repository
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.UserProfileChangeRequest
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.SetOptions
+import com.google.firebase.messaging.FirebaseMessaging
 import com.google.firebase.perf.FirebasePerformance
 import com.sdu.sharewise.data.Resource
 import com.sdu.sharewise.data.utils.await
@@ -21,6 +24,9 @@ class AuthRepositoryImpl @Inject constructor(
         trace.start() //tracing login
         return try {
             val result = firebaseAuth.signInWithEmailAndPassword(email, password).await()
+
+            saveFCMToken(result.user?.uid)
+
             trace.stop()
             Resource.Success(result.user!!)
         } catch (e: Exception) {
@@ -29,7 +35,6 @@ class AuthRepositoryImpl @Inject constructor(
             Resource.Failure(e)
         }
     }
-
 
     override suspend fun register(
         name: String,
@@ -41,6 +46,9 @@ class AuthRepositoryImpl @Inject constructor(
         return try {
             val result = firebaseAuth.createUserWithEmailAndPassword(email, password).await()
             result?.user?.updateProfile(UserProfileChangeRequest.Builder().setDisplayName(name).build())?.await()
+
+            saveFCMToken(result.user?.uid)
+
             currentUser?.let { userRepository.createUser(it.uid, name, email, phone = "") }
             trace.stop()
             Resource.Success(result.user!!)
@@ -53,5 +61,15 @@ class AuthRepositoryImpl @Inject constructor(
 
     override fun logout() {
         firebaseAuth.signOut()
+    }
+
+    private suspend fun saveFCMToken(userId: String?) {
+        val token = FirebaseMessaging.getInstance().token.await()
+
+        token?.let {
+            userId?.let {
+                userRepository.setNotificationtoken(userId, token)
+            }
+        }
     }
 }
