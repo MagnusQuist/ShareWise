@@ -6,6 +6,9 @@ import com.sdu.sharewise.data.Resource
 import com.sdu.sharewise.data.model.Group
 import com.sdu.sharewise.data.utils.await
 import com.sdu.sharewise.services.NotificationSenderService
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
 
 class GroupRepositoryImpl @Inject constructor (
@@ -30,15 +33,15 @@ class GroupRepositoryImpl @Inject constructor (
             val group = Group(groupUid = groupUid, name = name, desc = desc, color = color, ownerUid = ownerUid, members = members)
             firebaseDB.getReference("Groups").child(groupUid).setValue(group).await()
 
-            userRepository.getTokenFromUuid(ownerUid) { token ->
-                if (token != null) {
-                    NotificationSenderService.sendNotification(
-                        listOf(token),
-                        "Added to group",
-                        "You have been added to a new group called: $name"
-                    )
-                }
+            val tokens: List<String> = runBlocking {
+                members.map { it?.let { it1 -> userRepository.getTokenFromUuid(it1) } ?: "" }
             }
+
+            NotificationSenderService.sendNotification(
+                tokens,
+                "Added to group",
+                "You have been added to a new group called: $name"
+            )
             trace.stop()
             Resource.Success(group)
         } catch (e: Exception) {

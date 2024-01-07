@@ -4,8 +4,9 @@ data class User(
     val uuid: String,
     val name: String,
     val email: String,
+    val notificationToken: String? = null,
     val phone: String? = null,
 )  {
     // Secondary constructor with no-argument default values
-    constructor() : this("", "", "", "")
+    constructor() : this("", "", "", "", "")
 }

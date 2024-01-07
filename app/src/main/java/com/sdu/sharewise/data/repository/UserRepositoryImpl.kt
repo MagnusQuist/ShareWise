@@ -1,26 +1,19 @@
 package com.sdu.sharewise.data.repository
 
 import android.util.Log
-import com.google.android.gms.tasks.OnCompleteListener
-import com.google.android.gms.tasks.Task
-import com.google.firebase.auth.AuthCredential
-import com.google.firebase.auth.EmailAuthCredential
 import com.google.firebase.auth.EmailAuthProvider
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
-import com.google.firebase.auth.UserProfileChangeRequest
 import com.google.firebase.auth.userProfileChangeRequest
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.Query
 import com.google.firebase.database.ValueEventListener
-import com.google.firebase.firestore.SetOptions
 import com.google.firebase.perf.FirebasePerformance
 import com.sdu.sharewise.data.Resource
 import com.sdu.sharewise.data.model.User
 import com.sdu.sharewise.data.utils.await
 import javax.inject.Inject
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
 
 class UserRepositoryImpl @Inject constructor(
     private val firebaseDB: FirebaseDatabase
@@ -32,12 +25,13 @@ class UserRepositoryImpl @Inject constructor(
         uuid: String,
         name: String,
         email: String,
-        phone: String
+        phone: String,
+        notificationToken: String,
     ): Resource<User> {
         val trace = FirebasePerformance.getInstance().newTrace("createUser_trace")
         trace.start()
         return try {
-            val user = User(uuid = uuid, name = name, email = email, phone = phone)
+            val user = User(uuid = uuid, name = name, email = email, phone = phone, notificationToken = notificationToken)
             firebaseDB.getReference("Users").child(uuid).setValue(user).await()
             trace.stop()
             Resource.Success(user)
@@ -193,7 +187,7 @@ class UserRepositoryImpl @Inject constructor(
         trace.start()
         try {
             firebaseDB.getReference("Users").child(uuid).child("notificationToken")
-                .setValue(token, SetOptions.merge())
+                .setValue(token)
             trace.stop()
         } catch (e: Exception) {
             trace.stop()
@@ -201,10 +195,7 @@ class UserRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun getTokenFromUuid(
-        uuid: String,
-        callback: (String?) -> Unit
-    ) {
+    override suspend fun getTokenFromUuid(uuid: String): String? = suspendCoroutine { continuation ->
         val query = firebaseDB.getReference("Users").orderByChild("uuid").equalTo(uuid)
 
         query.addListenerForSingleValueEvent(object : ValueEventListener {
@@ -212,17 +203,17 @@ class UserRepositoryImpl @Inject constructor(
                 if (snapshot.exists()) {
                     for (userSnapshot in snapshot.children) {
                         val token = userSnapshot.child("notificationToken").getValue(String::class.java)
-                        callback(token)
+                        continuation.resume(token)
                         return
                     }
                 }
 
-                callback(null)
+                continuation.resume(null)
             }
 
             override fun onCancelled(error: DatabaseError) {
                 println("Firebase database error: ${error.message}")
-                callback(null)
+                continuation.resume(null)
             }
         })
     }
