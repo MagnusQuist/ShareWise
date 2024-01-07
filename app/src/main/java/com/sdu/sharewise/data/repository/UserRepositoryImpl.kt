@@ -7,13 +7,12 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
+import com.google.firebase.firestore.SetOptions
 import com.google.firebase.perf.FirebasePerformance
 import com.sdu.sharewise.data.Resource
 import com.sdu.sharewise.data.model.User
 import com.sdu.sharewise.data.utils.await
 import javax.inject.Inject
-import kotlin.coroutines.resume
-import kotlin.coroutines.suspendCoroutine
 
 class UserRepositoryImpl @Inject constructor(
     private val firebaseDB: FirebaseDatabase
@@ -150,7 +149,7 @@ class UserRepositoryImpl @Inject constructor(
         trace.start()
         try {
             firebaseDB.getReference("Users").child(uuid).child("notificationToken")
-                .setValue(token)
+                .setValue(token, SetOptions.merge())
             trace.stop()
         } catch (e: Exception) {
             trace.stop()
@@ -158,7 +157,10 @@ class UserRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun getTokenFromUuid(uuid: String): String? = suspendCoroutine { continuation ->
+    override suspend fun getTokenFromUuid(
+        uuid: String,
+        callback: (String?) -> Unit
+    ) {
         val query = firebaseDB.getReference("Users").orderByChild("uuid").equalTo(uuid)
 
         query.addListenerForSingleValueEvent(object : ValueEventListener {
@@ -166,17 +168,17 @@ class UserRepositoryImpl @Inject constructor(
                 if (snapshot.exists()) {
                     for (userSnapshot in snapshot.children) {
                         val token = userSnapshot.child("notificationToken").getValue(String::class.java)
-                        continuation.resume(token)
+                        callback(token)
                         return
                     }
                 }
 
-                continuation.resume(null)
+                callback(null)
             }
 
             override fun onCancelled(error: DatabaseError) {
                 println("Firebase database error: ${error.message}")
-                continuation.resume(null)
+                callback(null)
             }
         })
     }
