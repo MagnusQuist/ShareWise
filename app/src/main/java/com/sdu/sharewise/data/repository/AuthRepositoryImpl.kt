@@ -1,5 +1,6 @@
 package com.sdu.sharewise.data.repository
 
+import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.UserProfileChangeRequest
@@ -47,9 +48,17 @@ class AuthRepositoryImpl @Inject constructor(
             val result = firebaseAuth.createUserWithEmailAndPassword(email, password).await()
             result?.user?.updateProfile(UserProfileChangeRequest.Builder().setDisplayName(name).build())?.await()
 
-            saveFCMToken(result.user?.uid)
+            currentUser?.let {
+                userRepository.createUser(
+                    it.uid,
+                    name,
+                    email,
+                    phone = "",
+                    notificationToken = "",
+                )
+            }
 
-            currentUser?.let { userRepository.createUser(it.uid, name, email, phone = "") }
+            saveFCMToken(result.user?.uid)
             trace.stop()
             Resource.Success(result.user!!)
         } catch (e: Exception) {
@@ -65,6 +74,7 @@ class AuthRepositoryImpl @Inject constructor(
 
     private suspend fun saveFCMToken(userId: String?) {
         val token = FirebaseMessaging.getInstance().token.await()
+        Log.d("Token Generator", "Generating Token for user: $token")
 
         token?.let {
             userId?.let {
