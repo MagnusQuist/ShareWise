@@ -19,6 +19,7 @@ interface UserRepository {
 
     suspend fun deleteUser()
     suspend fun getUuidByEmail(email: String, callback: (String?) -> Unit)
+    suspend fun getEmailByUuid(email: String, callback: (String?) -> Unit)
     suspend fun setNotificationtoken(uuid: String, token: String)
     suspend fun getTokenFromUuid(uuid: String, callback: (String?) -> Unit)
 }

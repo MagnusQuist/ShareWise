@@ -42,10 +42,22 @@ class CreateGroupViewModel @Inject constructor(
         _groupMembers.value = members
     }
 
-    fun findUserByEmail(email: String, callback: (String?, String?) -> Unit) = viewModelScope.launch {
-        userRepository.getUuidByEmail(email) { user ->
-            if (user != null) {
-                callback("success", user)
+    fun findEmailByUuid(uuid: String, callback: (String?, String?) -> Unit) = viewModelScope.launch {
+        userRepository.getEmailByUuid(uuid) { email ->
+            if (email != null) {
+                callback("success", email)
+            } else {
+                callback("Email not found", null)
+            }
+        }
+
+        return@launch
+    }
+
+    fun findUuidByEmail(email: String, callback: (String?, String?) -> Unit) = viewModelScope.launch {
+        userRepository.getUuidByEmail(email) { uuid ->
+            if (uuid != null) {
+                callback("success", uuid)
             } else {
                 callback("User not found", null)
             }

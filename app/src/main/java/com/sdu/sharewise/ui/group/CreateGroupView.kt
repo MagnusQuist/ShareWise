@@ -1,6 +1,7 @@
 package com.sdu.sharewise.ui.group
 
 import android.content.Context
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -211,7 +212,22 @@ fun CreateGroupView(viewModel: CreateGroupViewModel, navController: NavHostContr
             ) {
                 itemsIndexed (members) { index, member ->
                     if (member != null) {
-                        MemberItem(email = member, index = index, membersList = members)
+                        // Get email from uuid
+                        var email = ""
+
+                        viewModel.findEmailByUuid(member) { tag, message ->
+                            if (tag == "success") {
+                                if (message != null) {
+                                    email = message
+                                }
+                            } else {
+                                Toast.makeText(context, tag, Toast.LENGTH_SHORT).show()
+                            }
+                        }
+
+                        Log.d("EMAIL", email)
+
+                        MemberItem(email = email, index = index, membersList = members)
                     }
                 }
             }
@@ -269,7 +285,7 @@ fun CreateGroupView(viewModel: CreateGroupViewModel, navController: NavHostContr
 
 @Composable
 fun MemberItem(
-    email: String,
+    email: String?,
     index: Int,
     membersList: SnapshotStateList<String?>,
 ) {
@@ -289,7 +305,9 @@ fun MemberItem(
                 contentDescription = null,
             )
             Spacer(modifier = Modifier.width(12.dp))
-            Text(text = email, style = MaterialTheme.typography.bodyMedium)
+            if (email != null) {
+                Text(text = email, style = MaterialTheme.typography.bodyMedium)
+            }
         }
 
         IconButton(
@@ -347,7 +365,7 @@ fun FormFieldTextAddMember(
             IconButton(
                 onClick = {
                     if (text.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\$".toRegex())) {
-                        viewModel.findUserByEmail(text) { tag, message ->
+                        viewModel.findUuidByEmail(text) { tag, message ->
                             if (tag == "success") {
                                 membersList.add(message)
                             } else {

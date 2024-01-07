@@ -15,7 +15,6 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.Query
 import com.google.firebase.database.ValueEventListener
-import com.google.firebase.database.ValueEventListener
 import com.google.firebase.firestore.SetOptions
 import com.google.firebase.perf.FirebasePerformance
 import com.sdu.sharewise.data.Resource
@@ -143,6 +142,43 @@ class UserRepositoryImpl @Inject constructor(
                 // Handle the error if needed
                 // For simplicity, we're just printing the error message here
                 println("Firebase Database Error: ${databaseError.message}")
+                callback(null)
+            }
+        })
+    }
+
+    override suspend fun getEmailByUuid(
+        uuid: String,
+        callback: (String?) -> Unit
+    ) {
+        val query = firebaseDB.getReference("Users").orderByChild("uuid").equalTo(uuid)
+
+        query.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                // Check if there is any matching user
+                Log.d("DataSnapshot", dataSnapshot.toString())
+
+                if (dataSnapshot.exists()) {
+                    // Iterate through the matching users (although there should be only one)
+                    for (userSnapshot in dataSnapshot.children) {
+                        // Get the UUID from the user data
+                        val email = userSnapshot.child("email").getValue(String::class.java)
+
+                        Log.d("EMAIL FROM DB", email!!)
+
+                        callback(email)
+                        return
+                    }
+                }
+
+                // If no matching user found, return null
+                callback(null)
+            }
+
+            override fun onCancelled(databaseError: DatabaseError) {
+                // Handle the error if needed
+                // For simplicity, we're just printing the error message here
+                Log.d("Firebase Database Error", databaseError.message)
                 callback(null)
             }
         })
