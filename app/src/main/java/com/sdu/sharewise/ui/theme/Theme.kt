@@ -54,7 +54,7 @@ val Typography = Typography(
     bodySmall = TextStyle(
         fontFamily = fonts,
         fontWeight = FontWeight.Light,
-        fontSize = 12.sp
+        fontSize = 14.sp
     ),
     titleLarge = TextStyle(
         fontFamily = fonts,
