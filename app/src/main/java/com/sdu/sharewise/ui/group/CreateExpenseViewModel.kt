@@ -2,6 +2,7 @@ package com.sdu.sharewise.ui.group
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.auth.FirebaseUser
 import com.sdu.sharewise.data.Resource
 import com.sdu.sharewise.data.model.Expense
 import com.sdu.sharewise.data.repository.AuthRepository
@@ -42,4 +43,7 @@ class CreateExpenseViewModel @Inject constructor(
 
         return@launch
     }
+
+    val getCurrentUser: FirebaseUser?
+        get() = authRepository.currentUser
 }
