@@ -33,14 +33,21 @@ class GroupRepositoryImpl @Inject constructor (
             val group = Group(groupUid = groupUid, name = name, desc = desc, color = color, ownerUid = ownerUid, members = members)
             firebaseDB.getReference("Groups").child(groupUid).setValue(group).await()
 
-            val tokens: List<String> = runBlocking {
-                members.map { it?.let { it1 -> userRepository.getTokenFromUuid(it1) } ?: "" }
+            val tokens: ArrayList<String> = ArrayList<String>()
+            for (uuid in members) {
+                if (uuid != null) {
+                    userRepository.getTokenFromUuid(uuid) {token ->
+                        if (token != null) {
+                            tokens.add(token)
+                        }
+                    }
+                }
             }
 
             NotificationSenderService.sendNotification(
                 tokens,
-                "Added to group",
-                "You have been added to a new group called: $name"
+                "Added to a New Group",
+                "You have been added to: $name"
             )
             trace.stop()
             Resource.Success(group)
