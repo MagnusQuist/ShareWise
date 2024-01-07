@@ -26,7 +26,7 @@ interface GroupExpenseRepository {
     )
 
     suspend fun payExpense(
-        expenseId: Int,
+        expenseId: String,
         expensePayer: String,
         amount: Float,
         paid: Boolean

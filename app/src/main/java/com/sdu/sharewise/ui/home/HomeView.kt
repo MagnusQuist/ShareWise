@@ -251,7 +251,7 @@ fun GroupCard(
                     )
                 }
                 Text(
-                    text = "${group.members.size + 1} member(s)",
+                    text = if (group.members.size == 0) "${group.members.size + 1} member(s)" else "${group.members.size} member(s)",
                     color = MaterialTheme.colorScheme.surfaceTint,
                     style = MaterialTheme.typography.bodyMedium
                 )

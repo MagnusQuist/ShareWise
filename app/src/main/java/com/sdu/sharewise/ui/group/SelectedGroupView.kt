@@ -40,6 +40,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -58,8 +59,10 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.sdu.sharewise.R
+import com.sdu.sharewise.data.Resource
 import com.sdu.sharewise.data.model.Expense
 import com.sdu.sharewise.data.model.Group
 import com.sdu.sharewise.navigation.Routes
@@ -73,9 +76,15 @@ fun SelectedGroupView (
     viewModel: SelectedGroupViewModel,
     navController: NavHostController
 ) {
+    var activeExpensesCount by remember { mutableStateOf(0) }
+
     val selectedGroup by viewModel.selectedGroup.observeAsState(Group())
 
     val expenses by viewModel.expenses.observeAsState(emptyList())
+
+    val payExpenseFlow = viewModel.payExpenseFlow.collectAsState()
+
+    var isLoading by remember { mutableStateOf(false) }
 
     // Observe error message from ViewModel
     val errorMessage by viewModel.errorMessage.observeAsState(null)
@@ -165,7 +174,7 @@ fun SelectedGroupView (
             Spacer(modifier = Modifier.height(10.dp))
 
             Text(
-                text = "${selectedGroup?.members?.size?.plus(1)} member(s)",
+                text = if (selectedGroup?.members?.size == 0) "${selectedGroup?.members?.size?.plus(1)} member(s)" else "${selectedGroup?.members?.size} member(s)",
                 color = MaterialTheme.colorScheme.surfaceTint,
                 style = MaterialTheme.typography.bodyMedium
             )
@@ -206,40 +215,59 @@ fun SelectedGroupView (
                 if (expenses.isEmpty()) {
                     item {
                         Text(
-                            text = "No Expenses yet...",
+                            text = "No expenses yet \uD83D\uDE40",
+                            textAlign = TextAlign.Center,
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.secondary,
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(16.dp)
+                                .padding(top = 20.dp)
                         )
                     }
                 } else {
                     itemsIndexed (expenses) { index, _ ->
-                        var email by remember { mutableStateOf<String?>(null) }
+                        if (!expenses[index].paid) {
+                            activeExpensesCount += 1
 
-                        // Get email from uuid
-                        LaunchedEffect(expenses[index].expenseCreator) {
-                            viewModel.findEmailByUuid(expenses[index].expenseCreator) { tag, message ->
-                                if (tag == "success") {
-                                    if (message != null) {
-                                        email = message
+                            var email by remember { mutableStateOf<String?>(null) }
+
+                            // Get email from uuid
+                            LaunchedEffect(expenses[index].expenseCreator) {
+                                viewModel.findEmailByUuid(expenses[index].expenseCreator) { tag, message ->
+                                    if (tag == "success") {
+                                        if (message != null) {
+                                            email = message
+                                        }
+                                    } else {
+                                        email = "Email not found.."
                                     }
-                                } else {
-                                    email = "Email not found.."
                                 }
                             }
-                        }
 
-                        if (email != null) {
-                            viewModel.getCurrentUser?.uid?.let {
-                                ExpenseCard(modifier = Modifier, expense = expenses[index],
-                                    currectUserUid =  it, context = context, expenseCreaterEmail = email!!
-                                )
+                            if (email != null) {
+                                viewModel.getCurrentUser?.uid?.let {
+                                    ExpenseCard(modifier = Modifier, expense = expenses[index],
+                                        currectUserUid =  it, expenseCreaterEmail = email!!, viewModel = viewModel, isLoading = isLoading
+                                    )
+                                }
                             }
-                        }
 
-                        Spacer(modifier = Modifier.height(18.dp))
+                            Spacer(modifier = Modifier.height(18.dp))
+                        }
+                    }
+                }
+
+                if (expenses.isNotEmpty() && activeExpensesCount <= 0) {
+                    item {
+                        Text(
+                            text = "All expenses are paid \uD83D\uDC4F",
+                            textAlign = TextAlign.Center,
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.secondary,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(top = 20.dp)
+                        )
                     }
                 }
 
@@ -249,6 +277,42 @@ fun SelectedGroupView (
             }
 
             Spacer(modifier = Modifier.height(18.dp))
+        }
+    }
+
+    payExpenseFlow.value?.let {
+        when (it) {
+            is Resource.Failure -> {
+                Toast.makeText(context, it.exception.message, Toast.LENGTH_LONG).show()
+            }
+            Resource.Loading -> {
+                isLoading = true
+            }
+            is Resource.Success -> {
+                LaunchedEffect(Unit) {
+                    Toast.makeText(context, "Expense Paid", Toast.LENGTH_SHORT).show()
+                    navController.navigate(
+                        "selectedGroup/"+selectedGroup?.groupUid, // Use the route with the parameter
+                        builder = {
+                            launchSingleTop = true
+
+                            popUpTo(Routes.Home.route) {
+                                saveState = true
+                            }
+                            navController.graph.startDestinationRoute?.let { route ->
+                                popUpTo(route) {
+                                    saveState = true
+                                }
+                            }
+                            with(navController.currentBackStackEntry?.arguments) {
+                                this?.getString("groupUid")?.let { groupUid ->
+                                    putString("groupUid", groupUid) // Provide the groupId here
+                                }
+                            }
+                        }
+                    )
+                }
+            }
         }
     }
 
@@ -263,7 +327,8 @@ fun ExpenseCard(
     expense: Expense,
     currectUserUid: String,
     expenseCreaterEmail: String,
-    context: Context
+    viewModel: SelectedGroupViewModel,
+    isLoading: Boolean
 ) {
     val background = if (expense.expensePayer == currectUserUid) MaterialTheme.colorScheme.onErrorContainer else MaterialTheme.colorScheme.outline
     Card(
@@ -347,7 +412,10 @@ fun ExpenseCard(
 
                         Button(
                             onClick = {
-                                Toast.makeText(context, "Expense payed", Toast.LENGTH_SHORT).show()
+                                viewModel.getCurrentUser?.uid?.let {
+                                    viewModel.payExpense(expenseUid = expense.uid,
+                                        expensePayer = it, amount = expense.amount, paid = true)
+                                }
                             },
                             modifier = Modifier
                                 .width(100.dp)
@@ -355,11 +423,18 @@ fun ExpenseCard(
                                 .clip(MaterialTheme.shapes.small)
                                 .background(MaterialTheme.colorScheme.primary)
                         ) {
-                            Text(
-                                text = "PAY",
-                                style = MaterialTheme.typography.bodyLarge,
-                                color = MaterialTheme.colorScheme.onPrimary
-                            )
+                            if (isLoading) {
+                                CircularProgressIndicator(
+                                    color = Color.White,
+                                    trackColor = MaterialTheme.colorScheme.secondary
+                                )
+                            } else {
+                                Text(
+                                    text = "PAY",
+                                    style = MaterialTheme.typography.bodyLarge,
+                                    color = MaterialTheme.colorScheme.onPrimary
+                                )
+                            }
                         }
                     }
 

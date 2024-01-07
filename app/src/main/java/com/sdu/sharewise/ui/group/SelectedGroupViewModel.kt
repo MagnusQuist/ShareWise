@@ -10,15 +10,18 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
+import com.sdu.sharewise.data.Resource
 import com.sdu.sharewise.data.model.Expense
 import com.sdu.sharewise.data.model.Group
 import com.sdu.sharewise.data.repository.AuthRepository
-import com.sdu.sharewise.data.repository.GroupRepository
+import com.sdu.sharewise.data.repository.GroupExpenseRepository
 import com.sdu.sharewise.data.repository.UserRepository
 import com.sdu.sharewise.data.utils.await
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -26,6 +29,7 @@ import javax.inject.Inject
 class SelectedGroupViewModel @Inject constructor(
     private val authRepository: AuthRepository,
     private val userRepository: UserRepository,
+    private val groupExpenseRepository: GroupExpenseRepository,
     private val firebaseDB: FirebaseDatabase
 ) : ViewModel() {
     private val _selectedGroup = MutableLiveData<Group?>()
@@ -33,6 +37,9 @@ class SelectedGroupViewModel @Inject constructor(
 
     private val _expenses = MutableLiveData<List<Expense>>()
     val expenses: LiveData<List<Expense>> get() = _expenses
+
+    private val _payExpenseFlow = MutableStateFlow<Resource<String>?>(null)
+    val payExpenseFlow: StateFlow<Resource<String>?> = _payExpenseFlow
 
     private val _errorMessage = MutableLiveData<String>()
     val errorMessage: LiveData<String> get() = _errorMessage
@@ -93,6 +100,12 @@ class SelectedGroupViewModel @Inject constructor(
         }
 
         return@launch
+    }
+
+    fun payExpense(expenseUid: String, expensePayer: String, amount: Float, paid: Boolean) = viewModelScope.launch {
+        _payExpenseFlow.value = Resource.Loading
+        groupExpenseRepository.payExpense(expenseUid, expensePayer, amount, paid)
+        _payExpenseFlow.value = Resource.Success("Expense Paid")
     }
 
     val getCurrentUser: FirebaseUser?

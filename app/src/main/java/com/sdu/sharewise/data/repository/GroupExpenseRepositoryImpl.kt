@@ -33,7 +33,7 @@ class GroupExpenseRepositoryImpl @Inject constructor(
         trace.start()
 
         return try {
-            val expense = Expense(groupUid = groupUid, amount = amount, expenseDesc = expenseDesc, expenseCreator = expenseCreator, expensePayer = expensePayer, paid = paid, time = time)
+            val expense = Expense(uid = expenseUid, groupUid = groupUid, amount = amount, expenseDesc = expenseDesc, expenseCreator = expenseCreator, expensePayer = expensePayer, paid = paid, time = time)
             firebaseDB.getReference("GroupExpenses").child(expenseUid).setValue(expense).await()
             trace.stop()
             Resource.Success(expense)
@@ -81,13 +81,13 @@ class GroupExpenseRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun payExpense(expenseId: Int, expensePayer: String, amount: Float, paid: Boolean) {
+    override suspend fun payExpense(expenseId: String, expensePayer: String, amount: Float, paid: Boolean) {
         val trace = FirebasePerformance.getInstance().newTrace("payExpense_trace")
         trace.start()
 
         try {
-            val expensesRef = FirebaseDatabase.getInstance().getReference("expenses")
-            val query = expensesRef.orderByChild("expenseId").equalTo(expenseId.toDouble())
+            val expensesRef = FirebaseDatabase.getInstance().getReference("GroupExpenses")
+            val query = expensesRef.orderByChild("uid").equalTo(expenseId)
 
             query.addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(dataSnapshot: DataSnapshot) {
