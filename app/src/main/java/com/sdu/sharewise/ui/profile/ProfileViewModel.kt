@@ -1,5 +1,6 @@
 package com.sdu.sharewise.ui.profile
 
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel

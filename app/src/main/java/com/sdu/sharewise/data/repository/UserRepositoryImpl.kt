@@ -15,6 +15,8 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.Query
 import com.google.firebase.database.ValueEventListener
+import com.google.firebase.database.ValueEventListener
+import com.google.firebase.firestore.SetOptions
 import com.google.firebase.perf.FirebasePerformance
 import com.sdu.sharewise.data.Resource
 import com.sdu.sharewise.data.model.User
@@ -148,5 +150,44 @@ class UserRepositoryImpl @Inject constructor(
 
     override suspend fun deleteUser() {
         TODO("Not yet implemented")
+    }
+
+    override suspend fun setNotificationtoken(uuid: String, token: String) {
+        val trace = FirebasePerformance.getInstance().newTrace("setNotificationToken_trace")
+        trace.start()
+        try {
+            firebaseDB.getReference("Users").child(uuid).child("notificationToken")
+                .setValue(token, SetOptions.merge())
+            trace.stop()
+        } catch (e: Exception) {
+            trace.stop()
+            e.printStackTrace()
+        }
+    }
+
+    override suspend fun getTokenFromUuid(
+        uuid: String,
+        callback: (String?) -> Unit
+    ) {
+        val query = firebaseDB.getReference("Users").orderByChild("uuid").equalTo(uuid)
+
+        query.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                if (snapshot.exists()) {
+                    for (userSnapshot in snapshot.children) {
+                        val token = userSnapshot.child("notificationToken").getValue(String::class.java)
+                        callback(token)
+                        return
+                    }
+                }
+
+                callback(null)
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                println("Firebase database error: ${error.message}")
+                callback(null)
+            }
+        })
     }
 }

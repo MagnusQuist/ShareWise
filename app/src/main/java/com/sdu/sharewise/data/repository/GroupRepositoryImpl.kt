@@ -5,10 +5,12 @@ import com.google.firebase.perf.FirebasePerformance
 import com.sdu.sharewise.data.Resource
 import com.sdu.sharewise.data.model.Group
 import com.sdu.sharewise.data.utils.await
+import com.sdu.sharewise.services.NotificationSenderService
 import javax.inject.Inject
 
 class GroupRepositoryImpl @Inject constructor (
-    private val firebaseDB: FirebaseDatabase
+    private val firebaseDB: FirebaseDatabase,
+    private val userRepository: UserRepository
 ) : GroupRepository {
     override val database: FirebaseDatabase?
         get() = firebaseDB
@@ -27,6 +29,16 @@ class GroupRepositoryImpl @Inject constructor (
         return try {
             val group = Group(groupUid = groupUid, name = name, desc = desc, color = color, ownerUid = ownerUid, members = members)
             firebaseDB.getReference("Groups").child(groupUid).setValue(group).await()
+
+            userRepository.getTokenFromUuid(ownerUid) { token ->
+                if (token != null) {
+                    NotificationSenderService.sendNotification(
+                        listOf(token),
+                        "Added to group",
+                        "You have been added to a new group called: $name"
+                    )
+                }
+            }
             trace.stop()
             Resource.Success(group)
         } catch (e: Exception) {

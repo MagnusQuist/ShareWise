@@ -57,6 +57,10 @@ dependencies {
     implementation("com.google.firebase:firebase-auth-ktx")
     implementation("com.google.firebase:firebase-database")
     implementation("com.google.firebase:firebase-perf")
+    implementation("com.google.firebase:firebase-messaging-ktx:23.4.0")
+    implementation("com.google.accompanist:accompanist-permissions:0.30.1")
+    implementation("com.google.firebase:firebase-firestore-ktx:24.10.0")
+    implementation("com.google.firebase:firebase-functions:20.4.0")
 
     // Compose
     val composeBom = platform("androidx.compose:compose-bom:2023.10.01")
