@@ -58,6 +58,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.sdu.sharewise.R
 import com.sdu.sharewise.data.model.Expense
@@ -146,7 +147,7 @@ fun SelectedGroupView (
             Spacer(modifier = Modifier.height(10.dp))
 
             Text(
-                text = "${selectedGroup?.members?.size?.plus(1)} member(s)",
+                text = if (selectedGroup?.members?.size == 0) "${selectedGroup?.members?.size?.plus(1)} member(s)" else "${selectedGroup?.members?.size} member(s)",
                 color = MaterialTheme.colorScheme.surfaceTint,
                 style = MaterialTheme.typography.bodyMedium
             )
@@ -197,30 +198,32 @@ fun SelectedGroupView (
                     }
                 } else {
                     itemsIndexed (expenses) { index, _ ->
-                        var email by remember { mutableStateOf<String?>(null) }
+                        if (expenses[index].paid != true) {
+                            var email by remember { mutableStateOf<String?>(null) }
 
-                        // Get email from uuid
-                        LaunchedEffect(expenses[index].expenseCreator) {
-                            viewModel.findEmailByUuid(expenses[index].expenseCreator) { tag, message ->
-                                if (tag == "success") {
-                                    if (message != null) {
-                                        email = message
+                            // Get email from uuid
+                            LaunchedEffect(expenses[index].expenseCreator) {
+                                viewModel.findEmailByUuid(expenses[index].expenseCreator) { tag, message ->
+                                    if (tag == "success") {
+                                        if (message != null) {
+                                            email = message
+                                        }
+                                    } else {
+                                        email = "Email not found.."
                                     }
-                                } else {
-                                    email = "Email not found.."
                                 }
                             }
-                        }
 
-                        if (email != null) {
-                            viewModel.getCurrentUser?.uid?.let {
-                                ExpenseCard(modifier = Modifier, expense = expenses[index],
-                                    currectUserUid =  it, context = context, expenseCreaterEmail = email!!
-                                )
+                            if (email != null) {
+                                viewModel.getCurrentUser?.uid?.let {
+                                    ExpenseCard(modifier = Modifier, expense = expenses[index],
+                                        currectUserUid =  it, context = context, expenseCreaterEmail = email!!, viewModel = viewModel, groupUid = groupUid
+                                    )
+                                }
                             }
-                        }
 
-                        Spacer(modifier = Modifier.height(18.dp))
+                            Spacer(modifier = Modifier.height(18.dp))
+                        }
                     }
                 }
 
@@ -244,7 +247,9 @@ fun ExpenseCard(
     expense: Expense,
     currectUserUid: String,
     expenseCreaterEmail: String,
-    context: Context
+    context: Context,
+    viewModel: SelectedGroupViewModel,
+    groupUid: String
 ) {
     val background = if (expense.expensePayer == currectUserUid) MaterialTheme.colorScheme.onErrorContainer else MaterialTheme.colorScheme.outline
     Card(
@@ -328,6 +333,10 @@ fun ExpenseCard(
 
                         Button(
                             onClick = {
+                                viewModel.getCurrentUser?.uid?.let {
+                                    viewModel.payExpense(expenseUid = expense.uid,
+                                        expensePayer = it, amount = expense.amount, paid = true)
+                                }
                                 Toast.makeText(context, "Expense payed", Toast.LENGTH_SHORT).show()
                             },
                             modifier = Modifier
