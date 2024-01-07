@@ -86,8 +86,8 @@ class GroupExpenseRepositoryImpl @Inject constructor(
         trace.start()
 
         try {
-            val expensesRef = FirebaseDatabase.getInstance().getReference("expenses")
-            val query = expensesRef.orderByChild("expenseId").equalTo(expenseId)
+            val expensesRef = FirebaseDatabase.getInstance().getReference("GroupExpenses")
+            val query = expensesRef.orderByChild("uid").equalTo(expenseId)
 
             query.addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(dataSnapshot: DataSnapshot) {
