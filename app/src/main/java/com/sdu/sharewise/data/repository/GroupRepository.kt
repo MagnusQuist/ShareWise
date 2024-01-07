@@ -22,5 +22,7 @@ interface GroupRepository {
         groupUid: String,
         uuid: String,
     ): Resource<Group>
-    suspend fun deleteGroup()
+    suspend fun deleteGroup(
+        groupUid: String
+    )
 }

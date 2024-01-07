@@ -27,6 +27,8 @@ import com.sdu.sharewise.ui.group.CreateGroupView
 import com.sdu.sharewise.ui.group.CreateGroupViewModel
 import com.sdu.sharewise.ui.group.SelectedGroupView
 import com.sdu.sharewise.ui.group.SelectedGroupViewModel
+import com.sdu.sharewise.ui.group.SettingsGroupView
+import com.sdu.sharewise.ui.group.SettingsGroupViewModel
 import com.sdu.sharewise.ui.home.HomeView
 import com.sdu.sharewise.ui.home.HomeViewModel
 import com.sdu.sharewise.ui.intro.IntroView
@@ -135,6 +137,16 @@ fun ShareWiseNavHost(
 
                     val viewModel = hiltViewModel<CreateExpenseViewModel>()
                     CreateExpenseView(viewModel, navController, group)
+                }
+            }
+
+            navigation(
+                startDestination = Routes.SettingsGroup.route,
+                route = "selectedGroup/{groupUid}/settings"
+            ) {
+                composable(Routes.SettingsGroup.route) {
+                    val viewModel = hiltViewModel<SettingsGroupViewModel>()
+                    SettingsGroupView(viewModel, navController)
                 }
             }
         }

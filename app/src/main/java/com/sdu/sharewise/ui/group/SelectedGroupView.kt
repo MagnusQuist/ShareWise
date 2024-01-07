@@ -138,7 +138,26 @@ fun SelectedGroupView (
                                 .size(22.dp)
                                 .align(Alignment.TopEnd),
                             onClick = {
-                                // navigateToHome(navController)
+                                navController.navigate(
+                                    "selectedGroup/"+selectedGroup?.groupUid+"/settings", // Use the route with the parameter
+                                    builder = {
+                                        launchSingleTop = true
+
+                                        popUpTo(Routes.Home.route) {
+                                            saveState = true
+                                        }
+                                        navController.graph.startDestinationRoute?.let { route ->
+                                            popUpTo(route) {
+                                                saveState = true
+                                            }
+                                        }
+                                        with(navController.currentBackStackEntry?.arguments) {
+                                            this?.getString("groupUid")?.let { groupUid ->
+                                                putString("groupUid", groupUid) // Provide the groupId here
+                                            }
+                                        }
+                                    }
+                                )
                             }) {
                             Icon(
                                 modifier = Modifier
