@@ -7,7 +7,6 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
-import com.google.firebase.firestore.SetOptions
 import com.google.firebase.perf.FirebasePerformance
 import com.sdu.sharewise.data.Resource
 import com.sdu.sharewise.data.model.User
@@ -182,7 +181,7 @@ class UserRepositoryImpl @Inject constructor(
         trace.start()
         try {
             firebaseDB.getReference("Users").child(uuid).child("notificationToken")
-                .setValue(token, SetOptions.merge())
+                .setValue(token)
             trace.stop()
         } catch (e: Exception) {
             trace.stop()
