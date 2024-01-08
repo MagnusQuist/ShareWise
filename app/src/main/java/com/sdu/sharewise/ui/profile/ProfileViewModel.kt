@@ -1,5 +1,6 @@
 package com.sdu.sharewise.ui.profile
 
+import android.util.Log
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -16,7 +17,10 @@ import com.sdu.sharewise.data.model.Group
 import com.sdu.sharewise.data.model.User
 import com.sdu.sharewise.data.repository.AuthRepository
 import com.sdu.sharewise.data.repository.UserRepository
+import com.sdu.sharewise.data.utils.await
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -103,6 +107,27 @@ class ProfileViewModel @Inject constructor(
                 _errorMessage.value = "Fail to get user."
             }
         })
+    }
+
+    fun fetchExpenses() {
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val snapshot = firebaseDB.getReference("GroupExpenses")
+                    .orderByChild("time")
+                    .get()
+                    .await()
+
+                val transactionsList = snapshot.children.toList().reversed()
+                    .mapNotNull { it.getValue(Expense::class.java) }
+                    .filter { expense ->
+                        (expense.expenseCreator == authRepository.currentUser?.uid || expense.expensePayer == authRepository.currentUser?.uid) && expense.paid
+                    }
+
+                _transactions.postValue(transactionsList)
+            } catch (e: Exception) {
+                _errorMessage.postValue("Failed to get groups.")
+            }
+        }
     }
 
     companion object {

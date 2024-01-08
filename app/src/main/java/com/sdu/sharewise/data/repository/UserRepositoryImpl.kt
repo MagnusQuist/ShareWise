@@ -149,15 +149,11 @@ class UserRepositoryImpl @Inject constructor(
         query.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 // Check if there is any matching user
-                Log.d("DataSnapshot", dataSnapshot.toString())
-
                 if (dataSnapshot.exists()) {
                     // Iterate through the matching users (although there should be only one)
                     for (userSnapshot in dataSnapshot.children) {
                         // Get the UUID from the user data
                         val email = userSnapshot.child("email").getValue(String::class.java)
-
-                        Log.d("EMAIL FROM DB", email!!)
 
                         callback(email)
                         return

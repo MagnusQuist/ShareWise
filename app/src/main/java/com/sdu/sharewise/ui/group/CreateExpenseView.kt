@@ -20,6 +20,7 @@ import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBackIos
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.outlined.AttachMoney
 import androidx.compose.material.icons.outlined.Description
@@ -27,6 +28,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -58,6 +60,7 @@ import com.sdu.sharewise.data.model.Group
 import com.sdu.sharewise.navigation.Routes
 import com.sdu.sharewise.ui.components.FormFieldText
 import com.sdu.sharewise.ui.components.NavigateToHomeButton
+import com.sdu.sharewise.ui.components.navigateToHome
 import com.sdu.sharewise.ui.home.GroupCard
 
 @Composable
@@ -94,7 +97,39 @@ fun CreateExpenseView(
                 modifier = Modifier
                     .fillMaxWidth(),
             ) {
-                NavigateToHomeButton(navController = navController)
+                IconButton(
+                    modifier = Modifier
+                        .size(22.dp),
+                    onClick = {
+                        navController.navigate(
+                            "selectedGroup/"+group?.groupUid, // Use the route with the parameter
+                            builder = {
+                                launchSingleTop = true
+
+                                popUpTo(Routes.Home.route) {
+                                    saveState = true
+                                }
+                                navController.graph.startDestinationRoute?.let { route ->
+                                    popUpTo(route) {
+                                        saveState = true
+                                    }
+                                }
+                                with(navController.currentBackStackEntry?.arguments) {
+                                    this?.getString("groupUid")?.let { groupUid ->
+                                        putString("groupUid", groupUid) // Provide the groupId here
+                                    }
+                                }
+                            }
+                        )
+                    }) {
+                    Icon(
+                        modifier = Modifier
+                            .size(22.dp),
+                        imageVector = Icons.Default.ArrowBackIos,
+                        tint = MaterialTheme.colorScheme.primary,
+                        contentDescription = "Go Back"
+                    )
+                }
 
                 Text(
                     modifier = Modifier
